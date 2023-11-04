@@ -1,4 +1,3 @@
-import os
 import functools
 from ilock import ILock
 
