@@ -38,8 +38,8 @@ class ContractHandler:
         """
         Gets an argument from the args, by trying both `{key}` and `_{key}`
         as the key to test.
-        :param args: The args to get an argument from
-        :param key:
+        :param args: The args to get an argument from.
+        :param key: The key to retrieve.
         :return:
         """
 
@@ -83,7 +83,7 @@ class ContractHandler:
 
         self._contract_key = contract_key
 
-    def __call__(self, client: MongoClient, session: ClientSession, event: AttributeDict, web3: Web3):
+    def __call__(self, client: MongoClient, db: str, session: ClientSession, event: AttributeDict, web3: Web3):
         """
         Processes an event inside a transaction. That transaction exists in a session,
         which is turn belongs to the client, and the given event will be processed by
@@ -92,10 +92,10 @@ class ContractHandler:
         for the fact of 0x0 addresses), and return whatever makes sense for the game
         to be notified about the changes.
         :param client: The MongoDB client to use.
+        :param db: The database to use.
         :param session: The current MongoDB session.
         :param event: The event being processed.
         :param web3: The Web3 client to use (optional).
-        :return: Whatever makes sense for the game.
         """
 
         raise NotImplementedError
