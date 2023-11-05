@@ -67,10 +67,10 @@ class EconomyHandler(ContractHandler):
             self._handle_deal_started(self._get_arg(args, 'dealId'),
                                       self._get_arg(args, 'emitter'),
                                       self._get_arg(args, 'receiver'),
-                                      deals_collection)
+                                      deals_collection, web3)
         elif event_name == 'DealAccepted':
             self._handle_deal_accepted(self._get_arg(args, 'dealId'),
-                                       deals_collection)
+                                       deals_collection, web3)
         elif event_name == 'DealConfirmed':
             self._handle_deal_confirmed(self._get_arg(args, 'dealId'),
                                         deals_collection)
@@ -138,22 +138,24 @@ class EconomyHandler(ContractHandler):
             for id_, value in zip(ids, values):
                 self._balance_change(to, id_, value, collection, session)
 
-    def _handle_deal_started(self, deal_index: int, emitter: str, receiver: str, collection: Collection):
+    def _handle_deal_started(self, deal_index: int, emitter: str, receiver: str, collection: Collection, web3: Web3):
         """
         Processes a started deal (metadata will be retrieved and properly updated).
         :param deal_index: The started deal.
         :param emitter: The deal emitter.
         :param receiver: The deal receiver.
         :param collection: The deals' collection.
+        :param web3: The Web3 client.
         """
 
         # TODO
 
-    def _handle_deal_accepted(self, deal_index: int, collection: Collection):
+    def _handle_deal_accepted(self, deal_index: int, collection: Collection, web3: Web3):
         """
         Processes an accepted deal (metadata will be retrieved and properly updated).
         :param deal_index: The accepted deal.
         :param collection: The deals' collection.
+        :param web3: The Web3 client.
         """
 
         # TODO
