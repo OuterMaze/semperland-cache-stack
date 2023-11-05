@@ -83,3 +83,18 @@ class ContractHandler:
         """
 
         raise NotImplementedError
+
+    @property
+    def contract_key(self):
+        """
+        The handler's contract key.
+        """
+
+        return self._contract_key()
+
+    def _contract_key(self):
+        """
+        The handler's contract key.
+        """
+
+        raise NotImplementedError

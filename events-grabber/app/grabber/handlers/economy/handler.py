@@ -25,6 +25,13 @@ class EconomyHandler(ContractHandler):
     def get_events(self):
         return EVENTS
 
+    def _contract_key(self):
+        """
+        The handler's contract key.
+        """
+
+        return "economy"
+
     def __call__(self, client: MongoClient, db: str, session: ClientSession, event: AttributeDict, web3: Web3):
         """
         Intended to process logs which come from a TransferSingle(address indexed, address
