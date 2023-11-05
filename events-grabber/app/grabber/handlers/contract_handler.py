@@ -67,22 +67,6 @@ class ContractHandler:
         # return [entry['name'] for entry in self.get_abi() if entry.get('type') == 'event']
         raise NotImplementedError
 
-    @property
-    def contract_key(self):
-        """
-        The handler's contract key.
-        """
-
-        return self._contract_key
-
-    def __init__(self, contract_key: str):
-        """
-        Each handler will be initialized with a contract key.
-        :param contract_key: The handler's contract key.
-        """
-
-        self._contract_key = contract_key
-
     def __call__(self, client: MongoClient, db: str, session: ClientSession, event: AttributeDict, web3: Web3):
         """
         Processes an event inside a transaction. That transaction exists in a session,
