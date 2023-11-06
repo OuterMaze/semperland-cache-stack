@@ -1,4 +1,4 @@
 requests==2.31.0
-web3==5.29.2
+git+https://github.com/ethereum/web3.py.git
 pymongo==4.1.1
 ilock==1.0.3
