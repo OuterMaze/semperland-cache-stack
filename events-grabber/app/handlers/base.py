@@ -53,7 +53,7 @@ class ContractEventHandler:
     def __init__(self, contract: Contract):
         self._contract = contract
 
-    def get_events(self):
+    def get_event_names(self):
         raise NotImplementedError
 
     @property
@@ -117,7 +117,7 @@ class ContractEventHandler:
         Collects all the relevant events for this handler.
         """
 
-        for event_name in self.get_events():
+        for event_name in self.get_event_names():
             event_filter = getattr(self._contract.events, event_name).createFilter(
                 fromBlock=start_block, toBlock=end_block
             )
