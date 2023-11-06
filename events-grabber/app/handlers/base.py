@@ -1,10 +1,48 @@
 from typing import Union, Dict, Tuple
 from pymongo import MongoClient
+from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from web3.datastructures import AttributeDict
 
 
-class ContractHandler:
+class EventList:
+    """
+    An event list, hierarchically sorted.
+    """
+
+    def __init__(self):
+        self._events = {}
+
+    def add_event(self, event: dict, handler: "ContractEventHandler"):
+        """
+        Adds an event to the structure
+        :param event: The event to add.
+        :param handler: The handler to add.
+        """
+
+        block_number = int(event["blockNumber"])
+        transaction_index = int(event["transactionIndex"])
+        log_index = int(event["logIndex"])
+
+        self._events.setdefault(block_number, {}).setdefault(transaction_index, {})[log_index] = (
+            event, handler
+        )
+
+    def sorted_events(self):
+        """
+        Iterates over the events.
+        :return: An iterator over the events.
+        """
+
+        for block_number in sorted(self._events.keys()):
+            block_number_events = self._events[block_number]
+            for transaction_number in sorted(block_number_events.keys()):
+                transaction_number_events = block_number_events[transaction_number]
+                for log_number in sorted(transaction_number_events.keys()):
+                    yield transaction_number_events[log_number]
+
+
+class ContractEventHandler:
     """
     A contract handler is used to collect and process the events of
     a specified contract. For example, a handler may focus on the
@@ -74,8 +112,7 @@ class ContractHandler:
                                                     "args", "event"}
         }}
 
-    def collect_events(self, start_block: str, end_block: str,
-                       events: Dict[Union[str, int], Dict[Union[str, int], Dict[Union[str, int], Tuple[AttributeDict, "ContractHandler"]]]]):
+    def collect_events(self, start_block: str, end_block: str, events: EventList):
         """
         Collects all the relevant events for this handler.
         """
@@ -85,12 +122,9 @@ class ContractHandler:
                 fromBlock=start_block, toBlock=end_block
             )
             for event in event_filter.get_all_entries():
-                entry = self._prune_event(event)
-                block = (events.setdefault(entry["blockNumber"], {}))
-                transaction = block.setdefault(entry["transactionIndex"], {})
-                transaction[entry["logIndex"]] = (event, self)
+                events.add_event(self._prune_event(event), self)
 
-    def process_event(self, event: AttributeDict):
+    def process_event(self, event: dict):
         """
         Processes an event accordingly.
         :param event: The event to process.
@@ -99,14 +133,15 @@ class ContractHandler:
         raise NotImplementedError
 
 
-class MongoDBContractHandler(ContractHandler):
+class MongoDBContractEventHandler(ContractEventHandler):
     """
     This contract handler has access to MongoDB features.
     """
 
-    def __init__(self, contract: Contract, client: MongoClient, db_name: str):
+    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session: ClientSession):
         super().__init__(contract)
         self._client = client
+        self._session = session
         self._db_name = db_name
         self._db = client[db_name]
 
@@ -133,3 +168,40 @@ class MongoDBContractHandler(ContractHandler):
         """
 
         return self._db_name
+
+    @property
+    def client_session(self):
+        """
+        The current session (with an open transaction).
+        """
+
+        return self._session
+
+
+class ContractEventHandlers:
+    """
+    This class manages a whole set of contract handlers to perform
+    a full lifecycle of event extractions.
+    """
+
+    def __init__(self, *args):
+        """
+        Creates the instance with a list of handlers.
+        :param args: The handlers, one by one, to specify.
+        """
+
+        self._handlers = args
+
+    def process_events(self, start_block: str, end_block: str):
+        """
+        Processes all the events from a start block number to the
+        end block number, both inclusive.
+        :param start_block: The start block index.
+        :param end_block: The end block index (both inclusive).
+        """
+
+        events = EventList()
+        for handler in self._handlers:
+            handler.collect_events(start_block, end_block, events)
+        for event, handler in events.sorted_events():
+            handler.process_event(event)
