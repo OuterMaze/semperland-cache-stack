@@ -98,3 +98,18 @@ class ContractHandler:
         """
 
         raise NotImplementedError
+
+    @property
+    def contract_address(self):
+        """
+        The handler's contract address.
+        """
+
+        return self._contract_address()
+
+    def _contract_address(self):
+        """
+        The handler's contract address.
+        """
+
+        raise NotImplementedError
