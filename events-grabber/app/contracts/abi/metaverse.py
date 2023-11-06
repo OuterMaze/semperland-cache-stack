@@ -1,15 +1,15 @@
 METAVERSE_CONTRACT_ABI = [
     {
-        "anonymous": false,
+        "anonymous": False,
         "inputs": [
             {
-                "indexed": true,
+                "indexed": True,
                 "internalType": "address",
                 "name": "previousOwner",
                 "type": "address"
             },
             {
-                "indexed": true,
+                "indexed": True,
                 "internalType": "address",
                 "name": "newOwner",
                 "type": "address"
@@ -19,28 +19,28 @@ METAVERSE_CONTRACT_ABI = [
         "type": "event"
     },
     {
-        "anonymous": false,
+        "anonymous": False,
         "inputs": [
             {
-                "indexed": true,
+                "indexed": True,
                 "internalType": "bytes32",
                 "name": "permission",
                 "type": "bytes32"
             },
             {
-                "indexed": true,
+                "indexed": True,
                 "internalType": "address",
                 "name": "user",
                 "type": "address"
             },
             {
-                "indexed": false,
+                "indexed": False,
                 "internalType": "bool",
                 "name": "set",
                 "type": "bool"
             },
             {
-                "indexed": false,
+                "indexed": False,
                 "internalType": "address",
                 "name": "sender",
                 "type": "address"
@@ -61,7 +61,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [],
@@ -75,7 +75,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -95,7 +95,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [],
@@ -109,7 +109,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -129,7 +129,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [],
@@ -143,7 +143,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -163,7 +163,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -183,7 +183,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [],
@@ -204,7 +204,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [],
@@ -218,7 +218,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -238,7 +238,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -471,7 +471,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -534,7 +534,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -606,7 +606,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
@@ -631,7 +631,7 @@ METAVERSE_CONTRACT_ABI = [
         ],
         "stateMutability": "view",
         "type": "function",
-        "constant": true
+        "constant": True
     },
     {
         "inputs": [
