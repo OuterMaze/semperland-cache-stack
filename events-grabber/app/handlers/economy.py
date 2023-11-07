@@ -5,6 +5,21 @@ from web3.contract import Contract
 from .base import MongoDBContractEventHandler
 
 
+"""
+This class has the following requirements in whatever is used as the underlying
+database:
+
+1. "deals" collection must be indexed:
+   - uniquely by `index`.
+   - non-uniquely by `emitter` (ordering does not matter).
+   - non-uniquely by `receiver` (ordering does not matter).
+
+2. "balances" collection must be indexed:
+   - non-uniquely by `token` (ordering does not matter).
+   - non-uniquely by `owner` (ordering does not matter).
+"""
+
+
 class EconomyContractHandler(MongoDBContractEventHandler):
     """
     This handler stands for the Economy contract.
