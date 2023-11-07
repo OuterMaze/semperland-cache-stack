@@ -17,6 +17,7 @@ database:
 2. "balances" collection must be indexed:
    - non-uniquely by `token` (ordering does not matter).
    - non-uniquely by `owner` (ordering does not matter).
+   - uniquely by the pair (`token`, `owner`).
 """
 
 
