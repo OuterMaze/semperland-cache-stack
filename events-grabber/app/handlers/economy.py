@@ -112,6 +112,7 @@ class EconomyContractHandler(MongoDBContractEventHandler):
         :param receiver: The deal receiver.
         """
 
+        emitter_ids, emitter_amounts, _, _ = self.contract.functions.dealsContents(deal_index)
         # TODO
 
     def _handle_deal_accepted(self, deal_index: int):
@@ -120,11 +121,13 @@ class EconomyContractHandler(MongoDBContractEventHandler):
         :param deal_index: The accepted deal.
         """
 
+        _, _, receiver_ids, receiver_amounts = self.contract.functions.dealsContents(deal_index)
         # TODO
 
     def _handle_deal_confirmed(self, deal_index: int):
         """
-        Processes a confirmed deal.
+        Processes a confirmed deal. By this event, the deal is REMOVED
+        from the blockchain, but will be kept in the cache.
         :param deal_index: The confirmed deal.
         """
 
@@ -132,7 +135,9 @@ class EconomyContractHandler(MongoDBContractEventHandler):
 
     def _handle_deal_broken(self, deal_index: int):
         """
-        Processes a broken (rejected, cancelled) deal.
+        Processes a broken (rejected, cancelled) deal. By this event,
+        the deal is REMOVED from the blockchain, but will be kept in
+        the cache.
         :param deal_index: The broken deal.
         """
 
