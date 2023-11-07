@@ -113,7 +113,14 @@ class EconomyContractHandler(MongoDBContractEventHandler):
         """
 
         emitter_ids, emitter_amounts, _, _ = self.contract.functions.dealsContents(deal_index)
-        # TODO
+        self._deals.insert_one({
+            "index": deal_index,
+            "emitter": emitter,
+            "receiver": receiver,
+            "emitter_ids": emitter_ids,
+            "emitter_amounts": emitter_amounts,
+            "status": "created"
+        })
 
     def _handle_deal_accepted(self, deal_index: int):
         """
@@ -122,7 +129,13 @@ class EconomyContractHandler(MongoDBContractEventHandler):
         """
 
         _, _, receiver_ids, receiver_amounts = self.contract.functions.dealsContents(deal_index)
-        # TODO
+        self._deals.update_one({
+            "index": deal_index
+        }, {"$set": {
+            "receiver_ids": receiver_ids,
+            "receiver_amounts": receiver_amounts,
+            "status": "accepted"
+        }})
 
     def _handle_deal_confirmed(self, deal_index: int):
         """
@@ -131,7 +144,11 @@ class EconomyContractHandler(MongoDBContractEventHandler):
         :param deal_index: The confirmed deal.
         """
 
-        # TODO
+        self._deals.update_one({
+            "index": deal_index
+        }, {"$set": {
+            "status": "confirmed"
+        }})
 
     def _handle_deal_broken(self, deal_index: int):
         """
@@ -141,4 +158,8 @@ class EconomyContractHandler(MongoDBContractEventHandler):
         :param deal_index: The broken deal.
         """
 
-        # TODO
+        self._deals.update_one({
+            "index": deal_index
+        }, {"$set": {
+            "status": "rejected"
+        }})
