@@ -1,8 +1,10 @@
+import json
 from typing import Union, Dict, Tuple
 from pymongo import MongoClient
 from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from web3.datastructures import AttributeDict
+from urllib.request import urlopen
 
 
 class EventList:
@@ -176,6 +178,45 @@ class MongoDBContractEventHandler(ContractEventHandler):
         """
 
         return self._session
+
+
+class TokenMetadataContractHandlerMixin:
+    """
+    This mix-in allows a contract handler to invoke the Metaverse's
+    `tokenURI` method and retrieve its JSON content. If there's an
+    error trying to retrieve the JSON content, then an incomplete
+    metadata will be returned instead.
+    """
+
+    def __init__(self, metaverse_contract):
+        self._metaverse_contract = metaverse_contract
+
+    def _get_json(self, url: str) -> dict:
+        """
+        Gets the associated JSON content from a URL.
+        :param url: The URL to retrieve.
+        :return: The JSON contents.
+        """
+
+        try:
+            with urlopen(url) as response:
+                if response.headers["Content-Type"] is None:
+                    raise Exception("Invalid content type")
+                return json.loads(response.read())
+        except:
+            return {"name": "INVALID", "description": "INVALID", "image": "about:blank", "properties": {}}
+
+    def _metadata(self, token_id: str):
+        """
+        Gets the associated JSON content from a token id.
+        :param token_id: The token id to retrieve the  metadata from.
+        :return: The JSON contents.
+        """
+
+        url = self._metaverse_contract.functions.tokenUri(token_id).call()
+        if url == "":
+            return {"name": "UNKNOWN", "description": "UNKNOWN", "image": "about:blank", "properties": {}}
+        return self._get_json(url)
 
 
 class ContractEventHandlers:
