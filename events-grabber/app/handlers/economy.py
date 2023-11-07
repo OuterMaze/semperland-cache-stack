@@ -31,8 +31,17 @@ class EconomyContractHandler(MongoDBContractEventHandler):
 
     def __init__(self, contract: Contract, client: MongoClient, db_name: str, session: ClientSession):
         super().__init__(contract, client, db_name, session)
-        self._deals = self.db["deals"]
-        self._balances = self.db["balances"]
+        self._deals = self.db[self.DEALS]
+        self._balances = self.db[self.BALANCES]
+
+    def get_event_names(self):
+        """
+        This handler processes 6 events: Transfer-related and deal-related.
+        :return: The names of the 6 events.
+        """
+
+        return ["TransferSingle", "TransferBatch", "DealStarted", "DealAccepted",
+                "DealConfirmed", "DealBroken"]
 
     def process_event(self, event: dict):
         """
