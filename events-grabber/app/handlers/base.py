@@ -180,16 +180,21 @@ class MongoDBContractEventHandler(ContractEventHandler):
         return self._session
 
 
-class TokenMetadataContractHandlerMixin:
+class TokenMetadataAwareContractEventHandler(MongoDBContractEventHandler):
     """
-    This mix-in allows a contract handler to invoke the Metaverse's
+    This subclass allows a contract handler to invoke the Metaverse's
     `tokenURI` method and retrieve its JSON content. If there's an
     error trying to retrieve the JSON content, then an incomplete
     metadata will be returned instead.
     """
 
-    def __init__(self, metaverse_contract):
+    TOKEN_METADATA = "token_metadata"
+
+    def __init__(self, contract: Contract, metaverse_contract: Contract,
+                 client: MongoClient, db_name: str, session: ClientSession):
+        super().__init__(contract, client, db_name, session)
         self._metaverse_contract = metaverse_contract
+        self._token_metadata = self.db[self.TOKEN_METADATA]
 
     def _get_json(self, url: str) -> dict:
         """
@@ -206,7 +211,7 @@ class TokenMetadataContractHandlerMixin:
         except:
             return {"name": "INVALID", "description": "INVALID", "image": "about:blank", "properties": {}}
 
-    def _metadata(self, token_id: str):
+    def _get_metadata(self, token_id: str):
         """
         Gets the associated JSON content from a token id.
         :param token_id: The token id to retrieve the  metadata from.
@@ -217,6 +222,35 @@ class TokenMetadataContractHandlerMixin:
         if url == "":
             return {"name": "UNKNOWN", "description": "UNKNOWN", "image": "about:blank", "properties": {}}
         return self._get_json(url)
+
+    def _download_metadata(self, token_id: str, token_type: str):
+        """
+        Downloads the associated JSON content from a token id. The content
+        is downloaded in the metadata table.
+        :param token_id: The id of the token whose metadata is being downloaded.
+        :param token_type: The token type.
+        """
+
+        data = self._get_metadata(token_id)
+        document = {
+            "token_id": token_id,
+            "metadata": data,
+            "token_type": token_type,
+            "token_group": "nft"
+        }
+        token_num = int(token_id)
+        if token_num & (1 << 255):
+            # FTs are associated to the system or to a brand.
+            # So here we extract the brand (where 0x000...000
+            # stands for the SYSTEM, actually).
+            #
+            # Also, the token is marked as FT instead of NFT.
+            brand_num = (token_num >> 64) & ((1 << 160) - 1)
+            document["brand_id"] = "0x%040x" % brand_num
+            document["token_group"] = "ft"
+        self._token_metadata.replace_one({
+            "token_id": token_id
+        }, document, upsert=True, session=self.client_session)
 
 
 class ContractEventHandlers:
