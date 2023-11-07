@@ -145,7 +145,7 @@ class EconomyContractHandler(MongoDBContractEventHandler):
             "emitter_ids": emitter_ids,
             "emitter_amounts": emitter_amounts,
             "status": "created"
-        })
+        }, session=self.client_session)
 
     def _handle_deal_accepted(self, deal_index: int):
         """
@@ -160,7 +160,7 @@ class EconomyContractHandler(MongoDBContractEventHandler):
             "receiver_ids": receiver_ids,
             "receiver_amounts": receiver_amounts,
             "status": "accepted"
-        }})
+        }}, session=self.client_session)
 
     def _handle_deal_confirmed(self, deal_index: int):
         """
@@ -173,7 +173,7 @@ class EconomyContractHandler(MongoDBContractEventHandler):
             "index": deal_index
         }, {"$set": {
             "status": "confirmed"
-        }})
+        }}, session=self.client_session)
 
     def _handle_deal_broken(self, deal_index: int):
         """
@@ -187,4 +187,4 @@ class EconomyContractHandler(MongoDBContractEventHandler):
             "index": deal_index
         }, {"$set": {
             "status": "rejected"
-        }})
+        }}, session=self.client_session)
