@@ -322,6 +322,41 @@ ECONOMY_CONTRACT_ABI = [
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "dealContents",
+        "outputs": [
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": True
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "_dealIndex",
                 "type": "uint256"
             }
