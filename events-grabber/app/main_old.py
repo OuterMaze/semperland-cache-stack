@@ -33,7 +33,7 @@ def grab_all_events_since(gateway_url: str, contracts_settings: list, state: dic
     for contract_settings in contracts_settings:
         handler = contract_settings['handler']
         contract_key = handler.contract_key
-        contract = client.eth.contract(web3.Web3.toChecksumAddress(contract_settings['address']),
+        contract = client.eth.contract(web3.Web3.to_checksum_address(contract_settings['address']),
                                        abi=handler.get_abi())
         for event_name in handler.get_events():
             event_state_key = f"{contract_key}:{event_name}"
