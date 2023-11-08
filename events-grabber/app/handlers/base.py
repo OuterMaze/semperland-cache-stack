@@ -191,20 +191,23 @@ database:
 """
 
 
-class TokenMetadataAwareContractEventHandler(MongoDBContractEventHandler):
+class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
     """
     This subclass allows a contract handler to invoke the Metaverse's
     `tokenURI` method and retrieve its JSON content. If there's an
     error trying to retrieve the JSON content, then an incomplete
-    metadata will be returned instead.
+    metadata will be returned instead. Also, allows interacting with
+    the metaverse's parameters.
     """
 
     TOKEN_METADATA = "tokens_metadata"
+    METAVERSE_PARAMETERS = "metaverse_parameters"
 
     def __init__(self, contract: Contract, metaverse_contract: Contract,
                  client: MongoClient, db_name: str, session: ClientSession):
         super().__init__(contract, client, db_name, session)
         self._metaverse_contract = metaverse_contract
+        self._metaverse_parameters = self.db[self.METAVERSE_PARAMETERS]
         self._token_metadata = self.db[self.TOKEN_METADATA]
 
     def _get_json(self, url: str) -> dict:
@@ -262,6 +265,19 @@ class TokenMetadataAwareContractEventHandler(MongoDBContractEventHandler):
         self._token_metadata.replace_one({
             "token_id": token_id
         }, document, upsert=True, session=self.client_session)
+
+    def _set_parameter(self, key, value):
+        """
+        Sets or updates a parameter in the blockchain.
+        :param key: The parameter name.
+        :param value: The parameter value. Not a specific type.
+        """
+
+        self._metaverse_parameters.replace_one({
+            "key": key
+        }, {
+            "key": key, "value": value
+        }, upsert=True, session=self.client_session)
 
 
 class ContractEventHandlers:
