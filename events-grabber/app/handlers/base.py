@@ -180,6 +180,17 @@ class MongoDBContractEventHandler(ContractEventHandler):
         return self._session
 
 
+"""
+This class has the following requirements in whatever is used as the underlying
+database:
+
+1. "tokens_metadata" collection must be indexed:
+   - uniquely by `token_id`.
+   - non-uniquely br `brand_id` (ordering does not matter).
+   - non-uniquely by `token_type` (ordering does not matter).
+"""
+
+
 class TokenMetadataAwareContractEventHandler(MongoDBContractEventHandler):
     """
     This subclass allows a contract handler to invoke the Metaverse's
@@ -188,7 +199,7 @@ class TokenMetadataAwareContractEventHandler(MongoDBContractEventHandler):
     metadata will be returned instead.
     """
 
-    TOKEN_METADATA = "token_metadata"
+    TOKEN_METADATA = "tokens_metadata"
 
     def __init__(self, contract: Contract, metaverse_contract: Contract,
                  client: MongoClient, db_name: str, session: ClientSession):
