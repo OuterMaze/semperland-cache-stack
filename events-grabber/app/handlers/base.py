@@ -1,10 +1,15 @@
 import json
+import logging
 from typing import Union, Dict, Tuple
 from pymongo import MongoClient
 from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from web3.datastructures import AttributeDict
 from urllib.request import urlopen
+
+
+LOGGER = logging.getLogger("grabber")
+LOGGER.setLevel(logging.INFO)
 
 
 class EventList:
@@ -54,6 +59,11 @@ class ContractEventHandler:
 
     def __init__(self, contract: Contract):
         self._contract = contract
+        self._name = "<unnamed>"
+
+    @property
+    def name(self):
+        return self._name
 
     def get_event_names(self):
         raise NotImplementedError
@@ -120,6 +130,7 @@ class ContractEventHandler:
         """
 
         for event_name in self.get_event_names():
+            LOGGER.info(f"Processing records for event: {self.name}:{event_name} in range: {start_block}:{end_block}")
             event_filter = getattr(self._contract.events, event_name).createFilter(
                 fromBlock=start_block, toBlock=end_block
             )
@@ -304,6 +315,9 @@ class ContractEventHandlers:
 
         events = EventList()
         for handler in self._handlers:
+            LOGGER.info(f"Collecting all the events for handler: {handler.name} in range: {start_block}:{end_block}")
             handler.collect_events(start_block, end_block, events)
         for event, handler in events.sorted_events():
+            LOGGER.info(f"Processing event {event['blockNumber']}:{event['transactionIndex']}:{event['logIndex']} "
+                        f"with handler: {handler.name}")
             handler.process_event(event)
