@@ -200,7 +200,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
     the metaverse's parameters.
     """
 
-    TOKEN_METADATA = "tokens_metadata"
+    TOKENS_METADATA = "tokens_metadata"
     METAVERSE_PARAMETERS = "metaverse_parameters"
 
     def __init__(self, contract: Contract, metaverse_contract: Contract,
@@ -208,7 +208,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
         super().__init__(contract, client, db_name, session)
         self._metaverse_contract = metaverse_contract
         self._metaverse_parameters = self.db[self.METAVERSE_PARAMETERS]
-        self._token_metadata = self.db[self.TOKEN_METADATA]
+        self._tokens_metadata = self.db[self.TOKENS_METADATA]
 
     def _get_json(self, url: str) -> dict:
         """
@@ -262,7 +262,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             brand_num = (token_num >> 64) & ((1 << 160) - 1)
             document["brand_id"] = "0x%040x" % brand_num
             document["token_group"] = "ft"
-        self._token_metadata.replace_one({
+        self._tokens_metadata.replace_one({
             "token_id": token_id
         }, document, upsert=True, session=self.client_session)
 
