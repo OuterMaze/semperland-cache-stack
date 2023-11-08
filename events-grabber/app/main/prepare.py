@@ -22,7 +22,7 @@ def _make_index(collection: Collection, index_name: str, unique: bool, fields: L
         pass
 
 
-def _make_indices(client: MongoClient, db_name: str):
+def make_indices(client: MongoClient, db_name: str):
     """
     Makes all the needed indices into the DB.
     :param client: The MongoDB client.

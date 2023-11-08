@@ -114,7 +114,7 @@ class ContractEventHandler:
                                                     "args", "event"}
         }}
 
-    def collect_events(self, start_block: str, end_block: str, events: EventList):
+    def collect_events(self, start_block: int, end_block: int, events: EventList):
         """
         Collects all the relevant events for this handler.
         """
@@ -294,7 +294,7 @@ class ContractEventHandlers:
 
         self._handlers = args
 
-    def process_events(self, start_block: str, end_block: str):
+    def process_events(self, start_block: int, end_block: int):
         """
         Processes all the events from a start block number to the
         end block number, both inclusive.
