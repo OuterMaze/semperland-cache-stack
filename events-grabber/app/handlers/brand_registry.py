@@ -16,7 +16,7 @@ database:
 """
 
 
-class BrandRegistryContractHandler(MetaverseRelatedContractEventHandler):
+class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
     """
     This handler stands for the BrandRegistry contract.
     """

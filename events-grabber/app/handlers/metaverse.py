@@ -15,7 +15,7 @@ database:
 """
 
 
-class MetaverseContractHandler(MongoDBContractEventHandler):
+class MetaverseContractEventHandler(MongoDBContractEventHandler):
     """
     This handler stands for the Economy contract.
     """

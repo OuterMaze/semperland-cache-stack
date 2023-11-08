@@ -21,7 +21,7 @@ database:
 """
 
 
-class EconomyContractHandler(MongoDBContractEventHandler):
+class EconomyContractEventHandler(MongoDBContractEventHandler):
     """
     This handler stands for the Economy contract.
     """

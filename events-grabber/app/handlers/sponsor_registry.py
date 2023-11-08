@@ -15,7 +15,7 @@ database:
 """
 
 
-class SponsorRegistryContractHandler(MongoDBContractEventHandler):
+class SponsorRegistryContractEventHandler(MongoDBContractEventHandler):
     """
     This handler stands for the SponsorRegistry contract.
     """

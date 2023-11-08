@@ -1,7 +1,7 @@
 from .base import MetaverseRelatedContractEventHandler
 
 
-class CurrencyMintingPluginContractHandler(MetaverseRelatedContractEventHandler):
+class CurrencyMintingPluginContractEventHandler(MetaverseRelatedContractEventHandler):
     """
     This handler stands for the CurrencyMintingPlugin contract.
     """
