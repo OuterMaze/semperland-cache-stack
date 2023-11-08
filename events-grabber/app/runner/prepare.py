@@ -69,7 +69,7 @@ def make_indices(client: MongoClient, db_name: str):
 
     # Indices for sponsors.
     sponsors = db[SponsorRegistryContractEventHandler.SPONSORS]
-    _make_index(balances, "for_sponsor", False, [("sponsor", ASCENDING)])
-    _make_index(balances, "for_brand_id", False, [("brand_id", ASCENDING)])
-    _make_index(balances, "full_match", True,
+    _make_index(sponsors, "for_sponsor", False, [("sponsor", ASCENDING)])
+    _make_index(sponsors, "for_brand_id", False, [("brand_id", ASCENDING)])
+    _make_index(sponsors, "full_match", True,
                 [("sponsor", ASCENDING), ("brand_id", ASCENDING)])
