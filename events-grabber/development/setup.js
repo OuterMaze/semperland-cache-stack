@@ -6,7 +6,6 @@ function toEthBN(v) { return web3.utils.toBN(web3.utils.toWei("10")); }
 
 // 1.2. Also, have this metaverse address.
 let metaverse = await Metaverse.deployed()
-metaverse.address
 
 // 1.3. Also, have the brand registry.
 let brandRegistry = await BrandRegistry.deployed()
@@ -63,8 +62,24 @@ await brandRegistry.brandSetPermission("0x", brandIds[4], brandAesthetics, accou
 await brandRegistry.brandSetPermission("0x", brandIds[4], brandAesthetics, accounts[8], true, {from: accounts[4]})
 
 // 3.5. Some metaverse-level permissions assignment.
-const mintBeat = web3.utils.keccak256("Plugins::Currency::BEAT::Mint");
-const currencySettingsManage = web3.utils.keccak256("Plugins::Currency::Settings::Manage");
-await metaverse.setPermission(mintBeat, accounts[10], true);
-await metaverse.setPermission(currencySettingsManage, accounts[11], true);
-await metaverse.setPermission(mintBeat, accounts[10], false);
+const mintBeat = web3.utils.keccak256("Plugins::Currency::BEAT::Mint")
+const currencySettingsManage = web3.utils.keccak256("Plugins::Currency::Settings::Manage")
+await metaverse.setPermission(mintBeat, accounts[10], true)
+await metaverse.setPermission(currencySettingsManage, accounts[11], true)
+await metaverse.setPermission(mintBeat, accounts[10], false)
+
+let sponsorRegistry = await SponsorRegistry.deployed()
+
+await sponsorRegistry.setSponsor(accounts[11], true)
+await sponsorRegistry.setSponsor(accounts[11], false)
+await sponsorRegistry.setSponsor(accounts[12], true)
+await sponsorRegistry.setSponsor(accounts[12], false)
+await sponsorRegistry.setSponsor(accounts[12], true)
+await sponsorRegistry.setSponsor(accounts[13], true)
+
+await sponsorRegistry.sponsor(brandIds[4], true, {from: accounts[12]})
+await sponsorRegistry.sponsor(brandIds[3], true, {from: accounts[13]})
+await sponsorRegistry.sponsor(brandIds[4], false, {from: accounts[12]})
+
+////////////////////////////// TODAS, HASTA ACÁ, YA LAS CORRÍ.
+
