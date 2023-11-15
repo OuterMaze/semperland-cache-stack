@@ -11,6 +11,8 @@ metaverse.address
 // 1.3. Also, have the brand registry.
 let brandRegistry = await BrandRegistry.deployed()
 
+// Sample brand events.
+
 // 2.1. accounts[0] mints "Coca Cola" brand for themselves.
 await brandRegistry.registerBrand("0x", "Coca Cola", "The Coca Cola company", "https://static.cocacola.com/image.png", "https://static.cocacola.com/icon16.png", "https://static.cocacola.com/icon32.png", "https://static.cocacola.com/icon64.png")
 
@@ -59,3 +61,10 @@ await brandRegistry.brandSetPermission("0x", brandIds[4], brandAesthetics, accou
 await brandRegistry.brandSetPermission("0x", brandIds[4], brandAesthetics, accounts[8], true, {from: accounts[4]})
 await brandRegistry.brandSetPermission("0x", brandIds[4], brandAesthetics, accounts[8], false, {from: accounts[4]})
 await brandRegistry.brandSetPermission("0x", brandIds[4], brandAesthetics, accounts[8], true, {from: accounts[4]})
+
+// 3.5. Some metaverse-level permissions assignment.
+const mintBeat = web3.utils.keccak256("Plugins::Currency::BEAT::Mint");
+const currencySettingsManage = web3.utils.keccak256("Plugins::Currency::Settings::Manage");
+await metaverse.setPermission(mintBeat, accounts[10], true);
+await metaverse.setPermission(currencySettingsManage, accounts[11], true);
+await metaverse.setPermission(mintBeat, accounts[10], false);
