@@ -3,8 +3,8 @@ from web3 import Web3
 from pymongo import MongoClient
 from pymongo.client_session import ClientSession
 from .prepare import make_indices
-from ..handlers import make_handlers
-from ..contracts import get_contracts
+from handlers import make_handlers
+from contracts import get_contracts
 
 
 def run_all(client: MongoClient, db_name: str, web3: Web3,

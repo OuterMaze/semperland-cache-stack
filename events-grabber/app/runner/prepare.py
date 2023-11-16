@@ -1,8 +1,8 @@
 from typing import List
 from pymongo import MongoClient, ASCENDING
 from pymongo.collection import Collection
-from ..handlers.base import MetaverseRelatedContractEventHandler
-from ..handlers import BrandRegistryContractEventHandler, EconomyContractEventHandler, \
+from handlers.base import MetaverseRelatedContractEventHandler
+from handlers import BrandRegistryContractEventHandler, EconomyContractEventHandler, \
     MetaverseContractEventHandler, SponsorRegistryContractEventHandler
 
 
