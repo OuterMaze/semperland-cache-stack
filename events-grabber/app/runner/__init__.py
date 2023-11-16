@@ -39,6 +39,7 @@ def run_all(client: MongoClient, db_name: str, web3: Web3,
 
             # Set the new last block.
             _set_last_processed_block(client, db_name, session, end_block)
+            session.commit_transaction()
 
 
 def _get_last_processed_block_number(client: MongoClient, db_name: str, session: ClientSession) -> Optional[int]:
