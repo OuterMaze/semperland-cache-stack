@@ -4,9 +4,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
     image: mongo
-    command: ["mongod", "--replSet", "rs0"]
+    command: ["/opt/mongo-entrypoint.sh"]
     volumes:
       - ./init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh:ro
+      - ./mongo-keyfile:/etc/mongo/keyfile-source:ro
+      - ./mongo-entrypoint.sh:/opt/mongo-entrypoint.sh:ro
     ports:
     - 27017:27017
     restart: always
