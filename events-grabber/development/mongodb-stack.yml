@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mongo:
     image: mongo
-    command: --replSet "rs0" --bind_ip_all
+    command: /opt/mongo-entrypoint.sh
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
@@ -11,6 +11,8 @@ services:
     ports:
       - "27017:27017"
     volumes:
+      - ./mongo-keyfile:/tmp/mongo/keyfile-source:ro
+      - ./mongo-entrypoint.sh:/opt/mongo-entrypoint.sh:ro
       - mongo-data:/data/db
     restart: always
   mongo-express:
