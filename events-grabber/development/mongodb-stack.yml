@@ -1,0 +1,33 @@
+services:
+  mongo:
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+    image: mongo
+    ports:
+    - 27017:27017
+    restart: always
+  mongo-express:
+    depends_on:
+    - mongo
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: ''
+      ME_CONFIG_BASICAUTH_PASSWORD: ''
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USER}
+      ME_CONFIG_MONGODB_PORT: '27017'
+      ME_CONFIG_MONGODB_SERVER: mongo
+    image: mongo-express
+    ports:
+    - 18084:8081
+    restart: always
+  # my-custom-container:
+  #   build: ..
+  #   depends_on:
+  #   - mongo
+  #   environment:
+  #     MONGODB_HOST: mongo
+  #     MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+  #     MONGODB_USER: ${MONGODB_USER}
+  # restart: always
+version: '3.8'
