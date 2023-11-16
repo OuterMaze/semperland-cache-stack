@@ -2,7 +2,7 @@
 // contract, and its friends, are deployed.
 
 // 1.1. Have this utility function.
-function toEthBN(v) { return web3.utils.toBN(web3.utils.toWei("10")); }
+function toEthBN(v) { return web3.utils.toBN(web3.utils.toWei(v)); }
 
 // 1.2. Also, have this metaverse address.
 let metaverse = await Metaverse.deployed()
@@ -107,3 +107,34 @@ await currencyDefinitionPlugin.setCurrencyColor("0x", pepsiCurrency, "#0000ff", 
 let currencyMintingPlugin = await CurrencyMintingPlugin.deployed()
 await currencyMintingPlugin.setCurrencyMintCost(toEthBN("5.5"))
 await currencyMintingPlugin.setCurrencyMintAmount(toEthBN("110"))
+
+// 7.1. We mint a lot of currencies to make a deal.
+await currencyMintingPlugin.mintBrandCurrency("0x", accounts[0], cocaColaCurrency, 4)
+await currencyMintingPlugin.mintBrandCurrency("0x", accounts[1], pepsiCurrency, 4, {from: accounts[1], value: toEthBN("22")})
+
+// 7.2. Start a deal 1 on currencies, then break it.
+let economy = await Economy.deployed()
+await economy.dealStart(accounts[0], accounts[1], [cocaColaCurrency], [toEthBN("1")])
+let deals = await economy.getPastEvents("DealStarted", {fromBlock: 0, toBlock: "latest"})
+deals = deals.map(e => e.args.dealId)
+await economy.dealBreak(deals[0])
+
+// 7.3. Start a deal 2 on currencies.
+await economy.dealStart(accounts[0], accounts[1], [cocaColaCurrency], [toEthBN("2")])
+
+// 7.4. Start a deal 3 on currencies.
+await economy.dealStart(accounts[0], accounts[1], [cocaColaCurrency], [toEthBN("3")])
+
+// 7.5. Accept deal 2.
+deals = await economy.getPastEvents("DealStarted", {fromBlock: 0, toBlock: "latest"})
+deals = deals.slice(1).map(e => e.args.dealId)
+await economy.dealAccept(deals[0], [pepsiCurrency], [, toEthBN("2")], {from: accounts[1]})
+
+// 7.6. Accept deal 3.
+await economy.dealAccept(deals[1], [pepsiCurrency], [, toEthBN("3")], {from: accounts[1]})
+
+// 7.7. Confirm deal 2.
+await economy.dealConfirm(deals[0])
+
+// 7.8. Break deal 3.
+await economy.dealBreak(deals[1])
