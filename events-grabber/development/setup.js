@@ -68,6 +68,7 @@ await metaverse.setPermission(mintBeat, accounts[10], true)
 await metaverse.setPermission(currencySettingsManage, accounts[11], true)
 await metaverse.setPermission(mintBeat, accounts[10], false)
 
+// 4.1. Setting sponsors.
 let sponsorRegistry = await SponsorRegistry.deployed()
 
 await sponsorRegistry.setSponsor(accounts[11], true)
@@ -77,19 +78,27 @@ await sponsorRegistry.setSponsor(accounts[12], false)
 await sponsorRegistry.setSponsor(accounts[12], true)
 await sponsorRegistry.setSponsor(accounts[13], true)
 
+// 4.2. Sponsor / de-sponsor brands.
 await sponsorRegistry.sponsor(brandIds[4], true, {from: accounts[12]})
 await sponsorRegistry.sponsor(brandIds[3], true, {from: accounts[13]})
 await sponsorRegistry.sponsor(brandIds[4], false, {from: accounts[12]})
 
 ////////////////////////////// TODAS, HASTA ACÁ, YA LAS CORRÍ.
 
-// 1. Coca, Pepsi and Google will define their currencies.
 let currencyDefinitionPlugin = await CurrencyDefinitionPlugin.deployed()
+
+// 5.1. Setting the definition cost.
 await currencyDefinitionPlugin.setCurrencyDefinitionCost(toEthBN("11"))
+
+// 5.2. Setting the definition earnings receiver.
 await currencyDefinitionPlugin.setBrandCurrencyDefinitionEarningsReceiver(accounts[99])
+
+// 5.3. CocaCola and Pepsi will define their currencies.
 await currencyDefinitionPlugin.defineBrandCurrency("0x", brandIds[0], "Coca Coin", "The currency of Coca Cola", "https://static.cocacula.com/currencies/main.png", {from: accounts[0]})
 await currencyDefinitionPlugin.defineBrandCurrency("0x", brandIds[1], "PepsiCoin", "The currency of PepsiCo", "https://static.pepsico.com/currencies/main.png", {from: accounts[1], value: toEthBN("11")})
 let currencies = await currencyDefinitionPlugin.getPastEvents("CurrencyDefined", {fromBlock: 0, toBlock: "latest"})
 let [wmaticCurrency, beatCurrency, cocaColaCurrency, pepsiCurrency] = currencies.map((e) => e.args.tokenId)
+
+// 5.4. Setting the color for those currencies.
 await currencyDefinitionPlugin.setCurrencyColor("0x", cocaColaCurrency, "#ff0000", {from: accounts[0]})
 await currencyDefinitionPlugin.setCurrencyColor("0x", pepsiCurrency, "#0000ff", {from: accounts[1]})
