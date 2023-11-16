@@ -102,3 +102,8 @@ let [wmaticCurrency, beatCurrency, cocaColaCurrency, pepsiCurrency] = currencies
 // 5.4. Setting the color for those currencies.
 await currencyDefinitionPlugin.setCurrencyColor("0x", cocaColaCurrency, "#ff0000", {from: accounts[0]})
 await currencyDefinitionPlugin.setCurrencyColor("0x", pepsiCurrency, "#0000ff", {from: accounts[1]})
+
+// 6.1. Setting the minting cost and amount.
+let currencyMintingPlugin = await CurrencyMintingPlugin.deployed()
+await currencyMintingPlugin.setCurrencyMintCost(toEthBN("5.5"))
+await currencyMintingPlugin.setCurrencyMintAmount(toEthBN("110"))
