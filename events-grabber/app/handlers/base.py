@@ -131,7 +131,7 @@ class ContractEventHandler:
 
         for event_name in self.get_event_names():
             LOGGER.info(f"Processing records for event: {self.name}:{event_name} in range: {start_block}:{end_block}")
-            event_filter = getattr(self._contract.events, event_name).createFilter(
+            event_filter = getattr(self._contract.events, event_name).create_filter(
                 fromBlock=start_block, toBlock=end_block
             )
             for event in event_filter.get_all_entries():
@@ -243,7 +243,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
         :return: The JSON contents.
         """
 
-        url = self._metaverse_contract.functions.tokenUri(token_id).call()
+        url = self._metaverse_contract.functions.tokenURI(token_id).call()
         if url == "":
             return {"name": "UNKNOWN", "description": "UNKNOWN", "image": "about:blank", "properties": {}}
         return self._get_json(url)
@@ -258,7 +258,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
 
         data = self._get_metadata(token_id)
         document = {
-            "token_id": token_id,
+            "token_id": str(token_id),
             "metadata": data,
             "token_type": token_type,
             "token_group": "nft"
@@ -274,7 +274,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             document["brand_id"] = "0x%040x" % brand_num
             document["token_group"] = "ft"
         self._tokens_metadata.replace_one({
-            "token_id": token_id
+            "token_id": str(token_id)
         }, document, upsert=True, **self.client_session_kwargs)
 
     def _set_parameter(self, key, value):
