@@ -7,7 +7,9 @@ from web3 import Web3, HTTPProvider
 from runner import run_all
 
 
+logging.basicConfig()
 LOGGER = logging.getLogger("grabber:main-loop")
+LOGGER.setLevel(logging.INFO)
 
 
 def main(mongodb_server_url: str, db_name: str, gateway_url: str, use_transactions: bool,
