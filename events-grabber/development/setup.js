@@ -94,7 +94,7 @@ await currencyDefinitionPlugin.setCurrencyDefinitionCost(toEthBN("11"))
 await currencyDefinitionPlugin.setBrandCurrencyDefinitionEarningsReceiver(accounts[99])
 
 // 5.3. CocaCola and Pepsi will define their currencies.
-await currencyDefinitionPlugin.defineBrandCurrency("0x", brandIds[0], "Coca Coin", "The currency of Coca Cola", "https://static.cocacula.com/currencies/main.png", {from: accounts[0]})
+await currencyDefinitionPlugin.defineBrandCurrency("0x", brandIds[0], "Coca Coin", "The currency of Coca Cola", "https://static.cocacola.com/currencies/main.png", {from: accounts[0]})
 await currencyDefinitionPlugin.defineBrandCurrency("0x", brandIds[1], "PepsiCoin", "The currency of PepsiCo", "https://static.pepsico.com/currencies/main.png", {from: accounts[1], value: toEthBN("11")})
 let currencies = await currencyDefinitionPlugin.getPastEvents("CurrencyDefined", {fromBlock: 0, toBlock: "latest"})
 let [wmaticCurrency, beatCurrency, cocaColaCurrency, pepsiCurrency] = currencies.map((e) => e.args.tokenId)
