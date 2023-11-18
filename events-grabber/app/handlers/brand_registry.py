@@ -47,7 +47,7 @@ class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
         args = event['args']
 
         if event_name == "BrandRegistrationCostUpdated":
-            self._set_parameter("brand_registration_cost", self._get_arg(args, "newCost"))
+            self._set_parameter("brand_registration_cost", str(self._get_arg(args, "newCost")))
         elif event_name == "BrandRegistered":
             self._download_metadata(self._get_arg(args, "brandId"), "brand")
         elif event_name == "BrandUpdated" or event_name == "BrandSocialCommitmentUpdated":

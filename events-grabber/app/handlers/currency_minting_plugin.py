@@ -24,6 +24,6 @@ class CurrencyMintingPluginContractEventHandler(MetaverseRelatedContractEventHan
         args = event['args']
 
         if event_name == "CurrencyMintCostUpdated":
-            self._set_parameter("currency_minting_cost", self._get_arg(args, "newCost"))
+            self._set_parameter("currency_minting_cost", str(self._get_arg(args, "newCost")))
         elif event_name == "CurrencyMintAmountUpdated":
-            self._set_parameter("currency_minting_amount", self._get_arg(args, "newAmount"))
+            self._set_parameter("currency_minting_amount", str(self._get_arg(args, "newAmount")))
