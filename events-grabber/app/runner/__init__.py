@@ -1,3 +1,4 @@
+import logging
 import contextlib
 from typing import Optional
 from web3 import Web3
@@ -5,6 +6,10 @@ from pymongo import MongoClient
 from .prepare import make_indices
 from handlers import make_handlers
 from contracts import get_contracts
+
+
+LOGGER = logging.getLogger("runner")
+LOGGER.setLevel(logging.INFO)
 
 
 @contextlib.contextmanager
@@ -19,14 +24,24 @@ def run_in_context(client: MongoClient, use_transactions: bool):
     """
 
     if use_transactions:
-        with client.start_session() as session:
-            # Review: Perhaps should I care about read and
-            # write concerns? Not sure.
-            with session.start_transaction():
-                yield {"session": session}
-                session.commit_transaction()
+        try:
+            LOGGER.info("Context [with transaction] started")
+            with client.start_session() as session:
+                # Review: Perhaps should I care about read and
+                # write concerns? Not sure.
+                with session.start_transaction():
+                    LOGGER.info("Context [with transaction] created its transaction")
+                    yield {"session": session}
+                    LOGGER.info("Context [with transaction] committed its transaction")
+                    session.commit_transaction()
+        finally:
+            LOGGER.info("Context [with transaction] ended")
     else:
-        yield {}
+        try:
+            LOGGER.info("Context [with no transaction] started")
+            yield {}
+        finally:
+            LOGGER.info("Context [with no transaction] ended")
 
 
 def run_all(client: MongoClient, db_name: str, web3: Web3, use_transactions: bool,
