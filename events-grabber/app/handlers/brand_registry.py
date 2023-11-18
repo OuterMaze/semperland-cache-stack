@@ -1,5 +1,6 @@
+import binascii
+import logging
 from pymongo import MongoClient
-from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from .base import MetaverseRelatedContractEventHandler
 
@@ -16,6 +17,10 @@ database:
 """
 
 
+LOGGER = logging.getLogger("BRAND_REGISTRY")
+LOGGER.setLevel(logging.INFO)
+
+
 class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
     """
     This handler stands for the BrandRegistry contract.
@@ -26,6 +31,7 @@ class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
     def __init__(self, contract: Contract, metaverse_contract: Contract,
                  client: MongoClient, db_name: str, session_kwargs: dict):
         super().__init__(contract, metaverse_contract, client, db_name, session_kwargs)
+        self._name = "brand-registry"
         self._permissions = self.db[self.BRAND_PERMISSIONS]
 
     def get_event_names(self):
@@ -49,12 +55,13 @@ class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
         if event_name == "BrandRegistrationCostUpdated":
             self._set_parameter("brand_registration_cost", str(self._get_arg(args, "newCost")))
         elif event_name == "BrandRegistered":
-            self._download_metadata(self._get_arg(args, "brandId"), "brand")
+            self._download_metadata(int(self._get_arg(args, "brandId"), 16), "brand")
         elif event_name == "BrandUpdated" or event_name == "BrandSocialCommitmentUpdated":
-            self._download_metadata(self._get_arg(args, "brandId"), "brand")
+            LOGGER.info(f"BrandRegistry event: {event_name}, args: {args}")
+            self._download_metadata(int(self._get_arg(args, "brandId") or self._get_arg(args, "brand"), 16), "brand")
         elif event_name == "BrandPermissionChanged":
             brand_id = self._get_arg(args, "brandId")
-            permission = self._get_arg(args, "permission")
+            permission = '0x' + binascii.hexlify(self._get_arg(args, 'permission')).decode('utf-8')
             user = self._get_arg(args, "user")
             set_ = self._get_arg(args, "set")
             self._permissions.replace_one({"permission": permission, "user": user, "brand_id": brand_id},

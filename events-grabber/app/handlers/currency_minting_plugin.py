@@ -6,6 +6,10 @@ class CurrencyMintingPluginContractEventHandler(MetaverseRelatedContractEventHan
     This handler stands for the CurrencyMintingPlugin contract.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._name = "currency-minting"
+
     def get_event_names(self):
         """
         Returns the list of events for parameter change.

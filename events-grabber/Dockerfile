@@ -4,12 +4,12 @@ FROM python:3.11
 # It will trigger main.py properly every 2 minutes.
 RUN apt-get update && apt-get -y install vim nano
 
+# Install the dependencies.
+COPY requirements.txt /tmp
+RUN pip install -r /tmp/requirements.txt
+
 # Set workdir and copy files.
 WORKDIR /app
 COPY app /app
-COPY requirements.txt /tmp
-
-# Install the dependencies.
-RUN pip install -r /tmp/requirements.txt
 
 CMD ["python3", "main.py"]

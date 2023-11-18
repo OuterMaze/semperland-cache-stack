@@ -1,6 +1,5 @@
 from typing import List
 from pymongo import MongoClient
-from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from .base import MongoDBContractEventHandler
 
@@ -31,6 +30,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
 
     def __init__(self, contract: Contract, client: MongoClient, db_name: str, session_kwargs: dict):
         super().__init__(contract, client, db_name, session_kwargs)
+        self._name = "economy"
         self._deals = self.db[self.DEALS]
         self._balances = self.db[self.BALANCES]
 
@@ -137,7 +137,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         :param receiver: The deal receiver.
         """
 
-        emitter_ids, emitter_amounts, _, _ = self.contract.functions.dealsContents(deal_index)
+        emitter_ids, emitter_amounts, _, _ = self.contract.functions.dealContents(deal_index).call()
         self._deals.insert_one({
             "index": str(deal_index),
             "emitter": emitter,
@@ -153,7 +153,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         :param deal_index: The accepted deal.
         """
 
-        _, _, receiver_ids, receiver_amounts = self.contract.functions.dealsContents(deal_index)
+        _, _, receiver_ids, receiver_amounts = self.contract.functions.dealContents(deal_index).call()
         self._deals.update_one({
             "index": str(deal_index)
         }, {"$set": {

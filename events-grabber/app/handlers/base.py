@@ -1,8 +1,7 @@
 import json
 import logging
-from typing import Union, Dict, Tuple
+from typing import Union
 from pymongo import MongoClient
-from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from web3.datastructures import AttributeDict
 from urllib.request import urlopen
@@ -236,7 +235,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
         except:
             return {"name": "INVALID", "description": "INVALID", "image": "about:blank", "properties": {}}
 
-    def _get_metadata(self, token_id: str):
+    def _get_metadata(self, token_id: int):
         """
         Gets the associated JSON content from a token id.
         :param token_id: The token id to retrieve the  metadata from.
@@ -248,7 +247,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             return {"name": "UNKNOWN", "description": "UNKNOWN", "image": "about:blank", "properties": {}}
         return self._get_json(url)
 
-    def _download_metadata(self, token_id: str, token_type: str):
+    def _download_metadata(self, token_id: int, token_type: str):
         """
         Downloads the associated JSON content from a token id. The content
         is downloaded in the metadata table.

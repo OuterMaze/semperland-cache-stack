@@ -1,5 +1,5 @@
+import binascii
 from pymongo import MongoClient
-from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from .base import MongoDBContractEventHandler
 
@@ -24,6 +24,7 @@ class MetaverseContractEventHandler(MongoDBContractEventHandler):
 
     def __init__(self, contract: Contract, client: MongoClient, db_name: str, session_kwargs: dict):
         super().__init__(contract, client, db_name, session_kwargs)
+        self._name = "metaverse"
         self._permissions = self.db[self.METAVERSE_PERMISSIONS]
 
     def get_event_names(self):
@@ -43,7 +44,7 @@ class MetaverseContractEventHandler(MongoDBContractEventHandler):
         event_name = event['event']
         args = event['args']
         if event_name == "PermissionChanged":
-            permission = self._get_arg(args, 'permission')
+            permission = '0x' + binascii.hexlify(self._get_arg(args, 'permission')).decode('utf-8')
             user = self._get_arg(args, 'user')
             set_ = self._get_arg(args, 'set')
             self._permissions.replace_one({"permission": permission, "user": user},

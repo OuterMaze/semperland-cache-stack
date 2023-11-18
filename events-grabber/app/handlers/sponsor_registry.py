@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from pymongo.client_session import ClientSession
 from web3.contract import Contract
 from .base import MongoDBContractEventHandler
 
@@ -24,6 +23,7 @@ class SponsorRegistryContractEventHandler(MongoDBContractEventHandler):
 
     def __init__(self, contract: Contract, client: MongoClient, db_name: str, session_kwargs: dict):
         super().__init__(contract, client, db_name, session_kwargs)
+        self._name = "sponsor-registry"
         self._sponsors = self.db[self.SPONSORS]
 
     def get_event_names(self):

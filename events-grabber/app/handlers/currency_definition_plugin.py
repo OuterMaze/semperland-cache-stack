@@ -6,6 +6,10 @@ class CurrencyDefinitionPluginContractEventHandler(MetaverseRelatedContractEvent
     This handler stands for the CurrencyDefinitionPlugin contract.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._name = "currency-definition"
+
     def get_event_names(self):
         """
         Returns the list of events: for parameter change, metadata
