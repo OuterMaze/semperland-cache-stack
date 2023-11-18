@@ -22,8 +22,8 @@ class MetaverseContractEventHandler(MongoDBContractEventHandler):
 
     METAVERSE_PERMISSIONS = "metaverse_permissions"
 
-    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session: ClientSession):
-        super().__init__(contract, client, db_name, session)
+    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session_kwargs: dict):
+        super().__init__(contract, client, db_name, session_kwargs)
         self._permissions = self.db[self.METAVERSE_PERMISSIONS]
 
     def get_event_names(self):

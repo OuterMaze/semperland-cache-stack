@@ -151,10 +151,10 @@ class MongoDBContractEventHandler(ContractEventHandler):
     This contract handler has access to MongoDB features.
     """
 
-    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session: ClientSession):
+    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session_kwargs: dict):
         super().__init__(contract)
         self._client = client
-        self._session = session
+        self._session_kwargs = session_kwargs
         self._db_name = db_name
         self._db = client[db_name]
 
@@ -183,12 +183,12 @@ class MongoDBContractEventHandler(ContractEventHandler):
         return self._db_name
 
     @property
-    def client_session(self):
+    def client_session_kwargs(self):
         """
-        The current session (with an open transaction).
+        The current session (with an open transaction), optionally.
         """
 
-        return self._session
+        return self._session_kwargs
 
 
 """
@@ -215,8 +215,8 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
     METAVERSE_PARAMETERS = "metaverse_parameters"
 
     def __init__(self, contract: Contract, metaverse_contract: Contract,
-                 client: MongoClient, db_name: str, session: ClientSession):
-        super().__init__(contract, client, db_name, session)
+                 client: MongoClient, db_name: str, session_kwargs: dict):
+        super().__init__(contract, client, db_name, session_kwargs)
         self._metaverse_contract = metaverse_contract
         self._metaverse_parameters = self.db[self.METAVERSE_PARAMETERS]
         self._tokens_metadata = self.db[self.TOKENS_METADATA]
@@ -275,7 +275,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             document["token_group"] = "ft"
         self._tokens_metadata.replace_one({
             "token_id": token_id
-        }, document, upsert=True, session=self.client_session)
+        }, document, upsert=True, **self.client_session_kwargs)
 
     def _set_parameter(self, key, value):
         """
@@ -288,7 +288,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             "key": key
         }, {
             "key": key, "value": value
-        }, upsert=True, session=self.client_session)
+        }, upsert=True, **self.client_session_kwargs)
 
 
 class ContractEventHandlers:

@@ -24,8 +24,8 @@ class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
     BRAND_PERMISSIONS = "brand_permissions"
 
     def __init__(self, contract: Contract, metaverse_contract: Contract,
-                 client: MongoClient, db_name: str, session: ClientSession):
-        super().__init__(contract, metaverse_contract, client, db_name, session)
+                 client: MongoClient, db_name: str, session_kwargs: dict):
+        super().__init__(contract, metaverse_contract, client, db_name, session_kwargs)
         self._permissions = self.db[self.BRAND_PERMISSIONS]
 
     def get_event_names(self):

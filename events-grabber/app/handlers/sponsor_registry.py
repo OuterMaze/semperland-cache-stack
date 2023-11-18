@@ -22,8 +22,8 @@ class SponsorRegistryContractEventHandler(MongoDBContractEventHandler):
 
     SPONSORS = "sponsors"
 
-    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session: ClientSession):
-        super().__init__(contract, client, db_name, session)
+    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session_kwargs: dict):
+        super().__init__(contract, client, db_name, session_kwargs)
         self._sponsors = self.db[self.SPONSORS]
 
     def get_event_names(self):
@@ -53,4 +53,4 @@ class SponsorRegistryContractEventHandler(MongoDBContractEventHandler):
                 "sponsor": sponsor,
                 "brand_id": brand_id,
                 "sponsored": sponsored
-            }, upsert=True, session=self.client_session)
+            }, upsert=True, **self.client_session_kwargs)

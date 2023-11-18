@@ -29,8 +29,8 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
     DEALS = "deals"
     BALANCES = "balances"
 
-    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session: ClientSession):
-        super().__init__(contract, client, db_name, session)
+    def __init__(self, contract: Contract, client: MongoClient, db_name: str, session_kwargs: dict):
+        super().__init__(contract, client, db_name, session_kwargs)
         self._deals = self.db[self.DEALS]
         self._balances = self.db[self.BALANCES]
 
@@ -85,7 +85,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         from_entry = self._balances.find_one({
             "owner": from_,
             "token": id_
-        }, session=self._session) or {}
+        }, **self.client_session_kwargs) or {}
         from_balance = int(from_entry.get('amount') or '0')
         from_balance += value
         from_balance_str = str(from_balance)
@@ -96,7 +96,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
             "owner": from_,
             "token": id_,
             "amount": from_balance_str
-        }, session=self._session, upsert=True)
+        }, upsert=True, **self.client_session_kwargs)
 
     def _handle_transfer_single(self, from_: str, to: str, id_: str, value: int):
         """
@@ -145,7 +145,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
             "emitter_ids": emitter_ids,
             "emitter_amounts": emitter_amounts,
             "status": "created"
-        }, session=self.client_session)
+        }, **self.client_session_kwargs)
 
     def _handle_deal_accepted(self, deal_index: int):
         """
@@ -160,7 +160,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
             "receiver_ids": receiver_ids,
             "receiver_amounts": receiver_amounts,
             "status": "accepted"
-        }}, session=self.client_session)
+        }}, **self.client_session_kwargs)
 
     def _handle_deal_confirmed(self, deal_index: int):
         """
@@ -173,7 +173,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
             "index": deal_index
         }, {"$set": {
             "status": "confirmed"
-        }}, session=self.client_session)
+        }}, **self.client_session_kwargs)
 
     def _handle_deal_broken(self, deal_index: int):
         """
@@ -187,4 +187,4 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
             "index": deal_index
         }, {"$set": {
             "status": "rejected"
-        }}, session=self.client_session)
+        }}, **self.client_session_kwargs)
