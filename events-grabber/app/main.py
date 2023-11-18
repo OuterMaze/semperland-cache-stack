@@ -1,9 +1,13 @@
 import os
+import logging
 from urllib.parse import quote_plus
 from ilock import ILock
 from pymongo import MongoClient
 from web3 import Web3, HTTPProvider
 from runner import run_all
+
+
+LOGGER = logging.getLogger("grabber:main-loop")
 
 
 def main(mongodb_server_url: str, db_name: str, gateway_url: str, use_transactions: bool,
@@ -17,9 +21,15 @@ def main(mongodb_server_url: str, db_name: str, gateway_url: str, use_transactio
     :param metaverse_contract_address: The address of the metaverse contract.
     """
 
-    with ILock("semperland.cache"):
-        client = MongoClient(mongodb_server_url)
-        run_all(client, db_name, Web3(HTTPProvider(gateway_url)), use_transactions, metaverse_contract_address)
+    try:
+        LOGGER.info("Started")
+        with ILock("semperland.cache"):
+            LOGGER.info("Creating client")
+            client = MongoClient(mongodb_server_url)
+            LOGGER.info("Running all the loop")
+            run_all(client, db_name, Web3(HTTPProvider(gateway_url)), use_transactions, metaverse_contract_address)
+    finally:
+        LOGGER.info("Ended")
 
 
 if __name__ == "__main__":
