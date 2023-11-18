@@ -11,8 +11,6 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./mongo-keyfile:/tmp/mongo/keyfile-source:ro
-      - ./mongo-entrypoint.sh:/opt/mongo-entrypoint.sh:ro
       - mongo-data:/data/db
     restart: always
   mongo-express:
