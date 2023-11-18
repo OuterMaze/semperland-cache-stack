@@ -150,7 +150,7 @@ BRAND_REGISTRY_CONTRACT_ABI = [
             {
                 "indexed": True,
                 "internalType": "address",
-                "name": "brand",
+                "name": "brandId",
                 "type": "address"
             },
             {
