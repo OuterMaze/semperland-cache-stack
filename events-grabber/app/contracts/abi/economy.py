@@ -55,6 +55,18 @@ ECONOMY_CONTRACT_ABI = [
                 "internalType": "address",
                 "name": "receiver",
                 "type": "address"
+            },
+            {
+                "indexed": False,
+                "internalType": "uint256[]",
+                "name": "receiverTokenIds",
+                "type": "uint256[]"
+            },
+            {
+                "indexed": False,
+                "internalType": "uint256[]",
+                "name": "receiverTokenAmounts",
+                "type": "uint256[]"
             }
         ],
         "name": "DealAccepted",
@@ -136,6 +148,18 @@ ECONOMY_CONTRACT_ABI = [
                 "internalType": "address",
                 "name": "receiver",
                 "type": "address"
+            },
+            {
+                "indexed": False,
+                "internalType": "uint256[]",
+                "name": "emitterTokenIds",
+                "type": "uint256[]"
+            },
+            {
+                "indexed": False,
+                "internalType": "uint256[]",
+                "name": "emitterTokenAmounts",
+                "type": "uint256[]"
             }
         ],
         "name": "DealStarted",

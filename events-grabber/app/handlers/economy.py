@@ -67,9 +67,13 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         elif event_name == 'DealStarted':
             self._handle_deal_started(self._get_arg(args, 'dealId'),
                                       self._get_arg(args, 'emitter'),
-                                      self._get_arg(args, 'receiver'))
+                                      self._get_arg(args, 'receiver'),
+                                      self._get_arg(args, 'emitterTokenIds'),
+                                      self._get_arg(args, 'emitterTokenAmounts'))
         elif event_name == 'DealAccepted':
-            self._handle_deal_accepted(self._get_arg(args, 'dealId'))
+            self._handle_deal_accepted(self._get_arg(args, 'dealId'),
+                                       self._get_arg(args, 'receiverTokenIds'),
+                                       self._get_arg(args, 'receiverTokenAmounts'))
         elif event_name == 'DealConfirmed':
             self._handle_deal_confirmed(self._get_arg(args, 'dealId'))
         elif event_name == 'DealBroken':
@@ -129,36 +133,39 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
             for id_, value in zip(ids, values):
                 self._balance_change(to, id_, value)
 
-    def _handle_deal_started(self, deal_index: int, emitter: str, receiver: str):
+    def _handle_deal_started(self, deal_index: int, emitter: str, receiver: str,
+                             emitter_token_ids: list, emitter_token_amounts: list):
         """
         Processes a started deal (metadata will be retrieved and properly updated).
         :param deal_index: The started deal.
         :param emitter: The deal emitter.
         :param receiver: The deal receiver.
+        :param emitter_token_ids: The ids of the emitter.
+        :param emitter_token_amounts: The amounts of the emitter.
         """
 
-        emitter_ids, emitter_amounts, _, _ = self.contract.functions.dealContents(deal_index).call()
         self._deals.insert_one({
             "index": str(deal_index),
             "emitter": emitter,
             "receiver": receiver,
-            "emitter_ids": [str(id) for id in emitter_ids],
-            "emitter_amounts": [str(amount) for amount in emitter_amounts],
+            "emitter_ids": [str(id) for id in emitter_token_ids],
+            "emitter_amounts": [str(amount) for amount in emitter_token_amounts],
             "status": "created"
         }, **self.client_session_kwargs)
 
-    def _handle_deal_accepted(self, deal_index: int):
+    def _handle_deal_accepted(self, deal_index: int, receiver_token_ids: list, receiver_token_amounts: list):
         """
         Processes an accepted deal (metadata will be retrieved and properly updated).
         :param deal_index: The accepted deal.
+        :param receiver_token_ids: The ids of the emitter.
+        :param receiver_token_amounts: The amounts of the emitter.
         """
 
-        _, _, receiver_ids, receiver_amounts = self.contract.functions.dealContents(deal_index).call()
         self._deals.update_one({
             "index": str(deal_index)
         }, {"$set": {
-            "receiver_ids": [str(id) for id in receiver_ids],
-            "receiver_amounts": [str(amount) for amount in receiver_amounts],
+            "receiver_ids": [str(id) for id in receiver_token_ids],
+            "receiver_amounts": [str(amount) for amount in receiver_token_amounts],
             "status": "accepted"
         }}, **self.client_session_kwargs)
 
