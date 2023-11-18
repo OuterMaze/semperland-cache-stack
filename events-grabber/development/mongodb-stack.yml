@@ -3,15 +3,12 @@ version: '3.8'
 services:
   mongo:
     image: mongo
-    command: /opt/mongo-entrypoint.sh
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
       MONGO_INITDB_DATABASE: admin
     ports:
       - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
     restart: always
   mongo-express:
     depends_on:
@@ -36,5 +33,3 @@ services:
   #     MONGODB_PASSWORD: ${MONGODB_PASSWORD}
   #     MONGODB_USER: ${MONGODB_USER}
   # restart: always
-volumes:
-  mongo-data:
