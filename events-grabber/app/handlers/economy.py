@@ -139,11 +139,11 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
 
         emitter_ids, emitter_amounts, _, _ = self.contract.functions.dealsContents(deal_index)
         self._deals.insert_one({
-            "index": deal_index,
+            "index": str(deal_index),
             "emitter": emitter,
             "receiver": receiver,
-            "emitter_ids": emitter_ids,
-            "emitter_amounts": emitter_amounts,
+            "emitter_ids": [str(id) for id in emitter_ids],
+            "emitter_amounts": [str(amount) for amount in emitter_amounts],
             "status": "created"
         }, **self.client_session_kwargs)
 
@@ -155,10 +155,10 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
 
         _, _, receiver_ids, receiver_amounts = self.contract.functions.dealsContents(deal_index)
         self._deals.update_one({
-            "index": deal_index
+            "index": str(deal_index)
         }, {"$set": {
-            "receiver_ids": receiver_ids,
-            "receiver_amounts": receiver_amounts,
+            "receiver_ids": [str(id) for id in receiver_ids],
+            "receiver_amounts": [str(amount) for amount in receiver_amounts],
             "status": "accepted"
         }}, **self.client_session_kwargs)
 
@@ -170,7 +170,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         """
 
         self._deals.update_one({
-            "index": deal_index
+            "index": str(deal_index)
         }, {"$set": {
             "status": "confirmed"
         }}, **self.client_session_kwargs)
@@ -184,7 +184,7 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         """
 
         self._deals.update_one({
-            "index": deal_index
+            "index": str(deal_index)
         }, {"$set": {
             "status": "rejected"
         }}, **self.client_session_kwargs)
