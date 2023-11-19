@@ -42,6 +42,7 @@ def make_indices(client: MongoClient, db_name: str):
     tokens_metadata = db[MetaverseRelatedContractEventHandler.TOKENS_METADATA]
     _make_index(tokens_metadata, "text", False,
                 [("metadata.name", TEXT), ("metadata.description", TEXT)])
+    _make_index(tokens_metadata, "for_name", True, [("metadata.name", ASCENDING)])
     _make_index(tokens_metadata, "for_token", True, [("token", ASCENDING)])
     _make_index(tokens_metadata, "for_brand", False, [("brand", ASCENDING)])
     _make_index(tokens_metadata, "for_token_type", False, [("token_type", ASCENDING)])
