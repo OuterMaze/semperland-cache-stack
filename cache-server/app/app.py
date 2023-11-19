@@ -114,6 +114,10 @@ class CacheApp(Flask):
         return self._db["deals"]
 
     @property
+    def metaverse_parameters(self):
+        return self._db["metaverse_parameters"]
+
+    @property
     def metaverse_permissions(self):
         return self._db["metaverse_permissions"]
 
@@ -247,3 +251,12 @@ def get_permissions(brand: str, user: str, session_kwargs: dict):
         sort=[], skip=current_app.get_skip()
     )
     return jsonify({"permissions": permissions})
+
+
+@app.route("/parameters", methods=["GET"])
+def get_parameters(session_kwargs: dict):
+    parameters = current_app.sort_and_page(
+        current_app.metaverse_parameters.find({}, **session_kwargs),
+        sort=[], skip=current_app.get_skip()
+    )
+    return jsonify({"parameters": parameters})
