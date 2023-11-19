@@ -45,7 +45,8 @@ def make_indices(client: MongoClient, db_name: str):
     _make_index(tokens_metadata, "for_name", True, [("metadata.name", ASCENDING)])
     _make_index(tokens_metadata, "for_token", True, [("token", ASCENDING)])
     _make_index(tokens_metadata, "for_brand", False, [("brand", ASCENDING)])
-    _make_index(tokens_metadata, "for_token_type", False, [("token_type", ASCENDING)])
+    _make_index(tokens_metadata, "for_token_type", False,
+                [("metadata.properties.type", ASCENDING)])
 
     # Indices for brand permission.
     brand_permissions = db[BrandRegistryContractEventHandler.BRAND_PERMISSIONS]

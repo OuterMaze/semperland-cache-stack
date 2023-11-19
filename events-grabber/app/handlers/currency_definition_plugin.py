@@ -31,6 +31,6 @@ class CurrencyDefinitionPluginContractEventHandler(MetaverseRelatedContractEvent
         if event_name == "CurrencyDefinitionCostUpdated":
             self._set_parameter("currency_definition_cost", str(self._get_arg(args, "newCost")))
         elif event_name == "CurrencyDefined":
-            self._download_metadata(self._get_arg(args, "tokenId"), "currency")
+            self._download_metadata(self._get_arg(args, "tokenId"))
         elif event_name == "CurrencyMetadataUpdated":
-            self._download_metadata(self._get_arg(args, "tokenId"), "currency")
+            self._download_metadata(self._get_arg(args, "tokenId"))

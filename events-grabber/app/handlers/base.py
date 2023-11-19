@@ -247,7 +247,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             return {"name": "UNKNOWN", "description": "UNKNOWN", "image": "about:blank", "properties": {}}
         return self._get_json(url)
 
-    def _download_metadata(self, token_id: int, token_type: str):
+    def _download_metadata(self, token_id: int):
         """
         Downloads the associated JSON content from a token id. The content
         is downloaded in the metadata table.
@@ -262,7 +262,6 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
         document = {
             "token": "0x%064x" % token_id,
             "metadata": data,
-            "token_type": token_type,
             "token_group": "nft"
         }
         token_num = int(token_id)
@@ -275,6 +274,9 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             brand_num = (token_num >> 64) & ((1 << 160) - 1)
             document["brand"] = "0x%040x" % brand_num
             document["token_group"] = "ft"
+        elif data.get("properties", {}).get("type") == "brand":
+            # We extract the brand itself.
+            document["brand"] = "0x%040x" % token_num
         self._tokens_metadata.replace_one({
             "token": "0x%064x" % token_id
         }, document, upsert=True, **self.client_session_kwargs)

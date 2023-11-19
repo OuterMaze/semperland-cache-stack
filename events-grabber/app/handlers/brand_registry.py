@@ -55,10 +55,10 @@ class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
         if event_name == "BrandRegistrationCostUpdated":
             self._set_parameter("brand_registration_cost", str(self._get_arg(args, "newCost")))
         elif event_name == "BrandRegistered":
-            self._download_metadata(int(self._get_arg(args, "brandId"), 16), "brand")
+            self._download_metadata(int(self._get_arg(args, "brandId"), 16))
         elif event_name == "BrandUpdated" or event_name == "BrandSocialCommitmentUpdated":
             LOGGER.info(f"BrandRegistry event: {event_name}, args: {args}")
-            self._download_metadata(int(self._get_arg(args, "brandId"), 16), "brand")
+            self._download_metadata(int(self._get_arg(args, "brandId"), 16))
         elif event_name == "BrandPermissionChanged":
             brand_id = self._get_arg(args, "brandId")
             permission = '0x' + binascii.hexlify(self._get_arg(args, 'permission')).decode('utf-8')
