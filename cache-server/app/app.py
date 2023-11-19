@@ -113,6 +113,10 @@ class CacheApp(Flask):
     def deals(self):
         return self._db["deals"]
 
+    @property
+    def metaverse_permissions(self):
+        return self._db["metaverse_permissions"]
+
     def sort_and_page(self, cursor: Cursor, sort: Optional[Union[dict, list]], skip: Optional[int]):
         """
         Applies sorting/paging based on the current limit.
@@ -217,4 +221,13 @@ def get_deals(dealer: str, session_kwargs: dict):
     return jsonify({"deals", deals})
 
 
-
+@app.route("/permissions/<string:user>", methods=["GET"])
+@app.mongo_session
+def get_permissions(user: str, session_kwargs: dict):
+    criteria = {"user": user, "value": True}
+    permissions = current_app.sort_and_page(
+        # Don't worry: It WILL be sorted on front-end.
+        current_app.metaverse_permissions.find(criteria, **session_kwargs),
+        sort=[], skip=current_app.get_skip()
+    )
+    return jsonify({"permissions": permissions})
