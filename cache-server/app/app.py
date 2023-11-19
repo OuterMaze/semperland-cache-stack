@@ -1,7 +1,28 @@
 import os
+from typing import Optional, Union
 from urllib.parse import quote_plus
-from flask import Flask
-from pymongo import MongoClient
+from flask import Flask, current_app, request, jsonify
+from pymongo import MongoClient, ASCENDING
+from pymongo.cursor import Cursor
+
+
+def sort_and_page(cursor: Cursor, sort: Optional[Union[dict, list]], skip: Optional[int], limit: Optional[int]):
+    """
+    Returns a modified cursor with a specific sorting, offset and limit.
+    :param cursor: The cursor.
+    :param sort: The sort.
+    :param skip: The skip.
+    :param limit: The limit.
+    :return: The new cursor.
+    """
+
+    if sort:
+        cursor = cursor.sort(sort)
+    if skip is not None and skip > 0:
+        cursor = cursor.skip(skip)
+    if limit is not None and limit > 0:
+        cursor = cursor.limit(limit)
+    return cursor
 
 
 class CacheApp(Flask):
@@ -14,6 +35,12 @@ class CacheApp(Flask):
         self._mongo_client = self._make_client()
         self._db = self._mongo_client[os.environ["DB_NAME"]]
         self._use_transactions = os.getenv('MONGODB_TRANSACTIONS') == 'yes'
+        try:
+            self._page_size = int(os.environ['PAGE_SIZE'])
+            if self._page_size < 1:
+                self._page_size = 10
+        except:
+            self._page_size = 10
 
     def _make_client(self):
         """
@@ -39,6 +66,35 @@ class CacheApp(Flask):
     def database(self):
         return self._db
 
+    @property
+    def tokens_metadata(self):
+        return self._db["tokens_metadata"]
+
+    def sort_and_page(self, cursor: Cursor, sort: Optional[Union[dict, list]], skip: Optional[int]):
+        """
+        Applies sorting/paging based on the current limit.
+        :param cursor: The cursor
+        :param sort: The sort criteria.
+        :param skip: The skip.
+        :return:
+        """
+
+        return sort_and_page(cursor, sort, skip, self._page_size)
+
+    def get_skip(self):
+        """
+        Gets the skip value to use.
+        :return: The skip value to use.
+        """
+
+        try:
+            page = int(request.args.get("page"))
+            if page < 0:
+                page = 0
+        except:
+            page = 0
+        return page * self._page_size
+
     def mongo_session(self, f):
         """
         A decorator that opens a mongodb transactional session
@@ -62,3 +118,16 @@ class CacheApp(Flask):
 
 
 app = CacheApp("cache-server")
+current_app: CacheApp
+
+
+@app.route("/brands", methods=["GET"])
+@app.mongo_session
+def get_brands(session_kwargs):
+    text = request.args.get("text")
+    criteria = {"$text": {"search": text}} if text else {}
+    brands = current_app.sort_and_page(
+        current_app.tokens_metadata.find(criteria, **session_kwargs),
+        sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
+    )
+    return jsonify({"brands": brands})
