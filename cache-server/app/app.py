@@ -214,8 +214,9 @@ def get_brand_tokens(brand: str, session_kwargs: dict):
 @app.mongo_session
 def get_balances(owner: str, session_kwargs: dict):
     criteria = {"owner": owner}
-    tokens = request.args.get("tokens", "").split(",")[:current_app.page_size]
+    tokens = request.args.get("tokens", "")
     if tokens:
+        tokens = tokens.split(",")[:current_app.page_size]
         criteria |= {"token": {"$in": tokens}}
     balances = current_app.sort_and_page(
         current_app.balances.find(criteria, **session_kwargs),
@@ -232,7 +233,7 @@ def get_deals(dealer: str, session_kwargs: dict):
         current_app.deals.find(criteria, **session_kwargs),
         sort=[("index", DESCENDING)], skip=current_app.get_skip()
     )
-    return jsonify({"deals", list(deals)})
+    return jsonify({"deals": list(deals)})
 
 
 @app.route("/permissions/<string:user>", methods=["GET"])
@@ -288,3 +289,4 @@ def get_sponsors(sponsor: str, session_kwargs: dict):
         current_app.sponsors.find(criteria, **session_kwargs),
         sort=[], skip=current_app.get_skip()
     )
+    return jsonify({"sponsors": list(sponsors)})
