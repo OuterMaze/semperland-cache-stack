@@ -125,6 +125,10 @@ class CacheApp(Flask):
     def brand_permissions(self):
         return self._db["brand_permissions"]
 
+    @property
+    def sponsors(self):
+        return self._db["sponsors"]
+
     def sort_and_page(self, cursor: Cursor, sort: Optional[Union[dict, list]], skip: Optional[int]):
         """
         Applies sorting/paging based on the current limit.
@@ -243,7 +247,7 @@ def get_permissions(user: str, session_kwargs: dict):
 
 @app.route("/brands/<string:brand>/permissions/<string:user>", methods=["GET"])
 @app.mongo_session
-def get_permissions(brand: str, user: str, session_kwargs: dict):
+def get_brand_permissions(brand: str, user: str, session_kwargs: dict):
     criteria = {"user": user, "value": True, "brand": brand}
     permissions = current_app.sort_and_page(
         # Don't worry: It WILL be sorted on front-end.
@@ -253,10 +257,32 @@ def get_permissions(brand: str, user: str, session_kwargs: dict):
     return jsonify({"permissions": permissions})
 
 
+@app.route("/brands/<string:brand>/sponsors", methods=["GET"])
+@app.mongo_session
+def get_brand_sponsors(brand: str, session_kwargs: dict):
+    criteria = {"brand": brand, "sponsored": True}
+    sponsors = current_app.sort_and_page(
+        current_app.sponsors.find(criteria, **session_kwargs),
+        sort=[], skip=current_app.get_skip()
+    )
+    return jsonify({"sponsors": sponsors})
+
+
 @app.route("/parameters", methods=["GET"])
+@app.mongo_session
 def get_parameters(session_kwargs: dict):
     parameters = current_app.sort_and_page(
         current_app.metaverse_parameters.find({}, **session_kwargs),
         sort=[], skip=current_app.get_skip()
     )
     return jsonify({"parameters": parameters})
+
+
+@app.route("/sponsors/<string:sponsor>", methods=["GET"])
+@app.mongo_session
+def get_sponsors(sponsor: str, session_kwargs: dict):
+    criteria = {"sponsor": sponsor, "sponsored": True}
+    sponsors = current_app.sort_and_page(
+        current_app.sponsors.find(criteria, **session_kwargs),
+        sort=[], skip=current_app.get_skip()
+    )
