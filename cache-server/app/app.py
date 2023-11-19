@@ -5,7 +5,7 @@ from typing import Optional, Union, Any
 from urllib.parse import quote_plus
 from bson import ObjectId
 from flask import Flask, current_app, request, jsonify
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient, ASCENDING, DESCENDING
 from pymongo.cursor import Cursor
 
 
@@ -109,6 +109,10 @@ class CacheApp(Flask):
     def balances(self):
         return self._db["balances"]
 
+    @property
+    def deals(self):
+        return self._db["deals"]
+
     def sort_and_page(self, cursor: Cursor, sort: Optional[Union[dict, list]], skip: Optional[int]):
         """
         Applies sorting/paging based on the current limit.
@@ -200,3 +204,17 @@ def get_balances(owner: str, session_kwargs: dict):
         sort=[("token", ASCENDING)], skip=current_app.get_skip()
     )
     return jsonify({"balances": balances})
+
+
+@app.route("/deals/<string:dealer>", methods=["GET"])
+@app.mongo_session
+def get_deals(dealer: str, session_kwargs: dict):
+    criteria = {"$or": [{"receiver": dealer}, {"emitter": dealer}]}
+    deals = current_app.sort_and_page(
+        current_app.deals.find(criteria, **session_kwargs),
+        sort=[("index", DESCENDING)], skip=current_app.get_skip()
+    )
+    return jsonify({"deals", deals})
+
+
+
