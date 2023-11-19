@@ -4,7 +4,7 @@ from datetime import datetime, date
 from typing import Optional, Union, Any
 from urllib.parse import quote_plus
 from bson import ObjectId
-from flask import Flask, current_app, request, jsonify
+from flask import Flask, current_app, request, jsonify, make_response
 from flask.json.provider import DefaultJSONProvider
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from pymongo.cursor import Cursor
@@ -290,3 +290,18 @@ def get_sponsors(sponsor: str, session_kwargs: dict):
         sort=[], skip=current_app.get_skip()
     )
     return jsonify({"sponsors": list(sponsors)})
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return make_response(jsonify({"code": "not-found"}), 404)
+
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return make_response(jsonify({"code": "method-not-allowed"}), 405)
+
+
+@app.errorhandler(Exception)
+def internal_error(e):
+    return make_response(jsonify({"code": "internal-error"}), 500)
