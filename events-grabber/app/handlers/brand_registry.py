@@ -64,6 +64,6 @@ class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
             permission = '0x' + binascii.hexlify(self._get_arg(args, 'permission')).decode('utf-8')
             user = self._get_arg(args, "user")
             set_ = self._get_arg(args, "set")
-            self._permissions.replace_one({"permission": permission, "user": user, "brand_id": brand_id},
-                                          {"permission": permission, "user": user, "brand_id": brand_id,
+            self._permissions.replace_one({"permission": permission, "user": user, "brand": brand_id},
+                                          {"permission": permission, "user": user, "brand": brand_id,
                                            "value": set_}, upsert=True)

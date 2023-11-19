@@ -48,9 +48,9 @@ class SponsorRegistryContractEventHandler(MongoDBContractEventHandler):
             sponsored = self._get_arg(args, "sponsored")
             self._sponsors.replace_one({
                 "sponsor": sponsor,
-                "brand_id": brand_id
+                "brand": brand_id
             }, {
                 "sponsor": sponsor,
-                "brand_id": brand_id,
+                "brand": brand_id,
                 "sponsored": sponsored
             }, upsert=True, **self.client_session_kwargs)

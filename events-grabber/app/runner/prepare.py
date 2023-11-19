@@ -1,5 +1,5 @@
 from typing import List
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient, ASCENDING, TEXT, DESCENDING
 from pymongo.collection import Collection
 from handlers.base import MetaverseRelatedContractEventHandler
 from handlers import BrandRegistryContractEventHandler, EconomyContractEventHandler, \
@@ -40,24 +40,26 @@ def make_indices(client: MongoClient, db_name: str):
 
     # Indices for tokens metadata.
     tokens_metadata = db[MetaverseRelatedContractEventHandler.TOKENS_METADATA]
-    _make_index(tokens_metadata, "for_token_id", True, [("token_id", ASCENDING)])
-    _make_index(tokens_metadata, "for_brand_id", False, [("brand_id", ASCENDING)])
+    _make_index(tokens_metadata, "text", False,
+                [("metadata.name", TEXT), ("metadata.description", TEXT)])
+    _make_index(tokens_metadata, "for_token", True, [("token", ASCENDING)])
+    _make_index(tokens_metadata, "for_brand", False, [("brand", ASCENDING)])
     _make_index(tokens_metadata, "for_token_type", False, [("token_type", ASCENDING)])
 
     # Indices for brand permission.
     brand_permissions = db[BrandRegistryContractEventHandler.BRAND_PERMISSIONS]
-    _make_index(brand_permissions, "for_brand_id", False,
-                [("brand_id", ASCENDING)])
-    _make_index(brand_permissions, "for_brand_id_and_permission", False,
-                [("brand_id", ASCENDING), ("permission", ASCENDING)])
+    _make_index(brand_permissions, "for_brand", False,
+                [("brand", ASCENDING)])
+    _make_index(brand_permissions, "for_brand_and_permission", False,
+                [("brand", ASCENDING), ("permission", ASCENDING)])
     _make_index(brand_permissions, "for_user", False,
                 [("user", ASCENDING)])
     _make_index(brand_permissions, "full_match", True,
-                [("brand_id", ASCENDING), ("permission", ASCENDING), ("user", ASCENDING)])
+                [("brand", ASCENDING), ("permission", ASCENDING), ("user", ASCENDING)])
 
     # Indices for deals.
     deals = db[EconomyContractEventHandler.DEALS]
-    _make_index(deals, "for_index", True, [("index", ASCENDING)])
+    _make_index(deals, "for_index", True, [("index", DESCENDING)])
     _make_index(deals, "for_emitter", False, [("emitter", ASCENDING)])
     _make_index(deals, "for_receiver", False, [("receiver", ASCENDING)])
 
@@ -66,10 +68,11 @@ def make_indices(client: MongoClient, db_name: str):
     _make_index(balances, "for_token", False, [("token", ASCENDING)])
     _make_index(balances, "for_owner", False, [("owner", ASCENDING)])
     _make_index(balances, "full_match", True, [("token", ASCENDING), ("owner", ASCENDING)])
+    _make_index(balances, "for_brand", False, [("brand", ASCENDING)])
 
     # Indices for sponsors.
     sponsors = db[SponsorRegistryContractEventHandler.SPONSORS]
     _make_index(sponsors, "for_sponsor", False, [("sponsor", ASCENDING)])
-    _make_index(sponsors, "for_brand_id", False, [("brand_id", ASCENDING)])
+    _make_index(sponsors, "for_brand", False, [("brand", ASCENDING)])
     _make_index(sponsors, "full_match", True,
-                [("sponsor", ASCENDING), ("brand_id", ASCENDING)])
+                [("sponsor", ASCENDING), ("brand", ASCENDING)])

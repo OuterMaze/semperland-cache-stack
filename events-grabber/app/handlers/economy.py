@@ -93,14 +93,19 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         from_balance = int(from_entry.get('amount') or '0')
         from_balance += value
         from_balance_str = str(from_balance)
-        self._balances.replace_one({
-            "owner": from_,
-            "token": id_
-        }, {
+        data = {
             "owner": from_,
             "token": id_,
             "amount": from_balance_str
-        }, upsert=True, **self.client_session_kwargs)
+        }
+        id_val = int(id_, 16)
+        if id_val & (1 << 255):
+            brand_id = "0x%040x" % ((id_val & ((1 << 255) - 1)) >> 64)
+            data["brand"] = brand_id
+        self._balances.replace_one({
+            "owner": from_,
+            "token": id_
+        }, data, upsert=True, **self.client_session_kwargs)
 
     def _handle_transfer_single(self, from_: str, to: str, id_: str, value: int):
         """
