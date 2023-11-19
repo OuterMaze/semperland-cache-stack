@@ -188,7 +188,7 @@ def get_brands(session_kwargs: dict):
     text = request.args.get("text")
     criteria = {"token_group": "nft", "metadata.properties.type": "brand"}
     if text:
-        criteria |= {"$text": {"search": text}}
+        criteria |= {"$text": {"$search": text}}
     brands = current_app.sort_and_page(
         current_app.tokens_metadata.find(criteria, **session_kwargs),
         sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
@@ -202,7 +202,7 @@ def get_brand_tokens(brand: str, session_kwargs: dict):
     text = request.args.get("text")
     criteria = {"token_group": "ft", "brand": brand}
     if text:
-        criteria |= {"$text": {"search": text}}
+        criteria |= {"$text": {"$search": text}}
     tokens = current_app.sort_and_page(
         current_app.tokens_metadata.find(criteria, **session_kwargs),
         sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
