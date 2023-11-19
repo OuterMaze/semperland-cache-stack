@@ -156,9 +156,25 @@ current_app: CacheApp
 @app.mongo_session
 def get_brands(session_kwargs):
     text = request.args.get("text")
-    criteria = {"$text": {"search": text}} if text else {}
+    criteria = {"token_group": "nft", "token_type": "brand"}
+    if text:
+        criteria |= {"$text": {"search": text}}
     brands = current_app.sort_and_page(
         current_app.tokens_metadata.find(criteria, **session_kwargs),
         sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
     )
     return jsonify({"brands": brands})
+
+
+@app.route("/brands/<string:brand>/tokens", methods=["GET"])
+@app.mongo_session
+def get_brands(brand, session_kwargs):
+    text = request.args.get("text")
+    criteria = {"token_group": "ft", "brand": brand}
+    if text:
+        criteria |= {"$text": {"search": text}}
+    tokens = current_app.sort_and_page(
+        current_app.tokens_metadata.find(criteria, **session_kwargs),
+        sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
+    )
+    return jsonify({"tokens": tokens})
