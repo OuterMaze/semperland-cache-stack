@@ -1,9 +1,38 @@
 import os
-from typing import Optional, Union
+from datetime import datetime, date
+from json import JSONEncoder
+from typing import Optional, Union, Any
 from urllib.parse import quote_plus
+from bson import ObjectId
 from flask import Flask, current_app, request, jsonify
 from pymongo import MongoClient, ASCENDING
 from pymongo.cursor import Cursor
+
+
+DATETIME_FORMATS = [
+    "%Y-%m-%d %H:%M:%S.%f",
+    "%Y-%m-%dT%H:%M:%S.%f",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%dT%H:%M:%S",
+]
+DATE_FORMAT = "%Y-%m-%d"
+
+
+class MongoDBEnhancedEncoder(JSONEncoder):
+    """
+    This is an enhancement over a Flask's JSONEncoder but with
+    adding the encoding of an ObjectId to string, and custom
+    encodings for the date and datetime types.
+    """
+
+    def default(self, o: Any) -> Any:
+        if isinstance(o, ObjectId):
+            return str(o)
+        elif isinstance(o, datetime):
+            return o.strftime(DATETIME_FORMATS[0])
+        elif isinstance(o, date):
+            return o.strftime(DATE_FORMAT)
+        return super().default(o)
 
 
 def sort_and_page(cursor: Cursor, sort: Optional[Union[dict, list]], skip: Optional[int], limit: Optional[int]):
@@ -29,6 +58,8 @@ class CacheApp(Flask):
     """
     The cache app we use.
     """
+
+    json_encoder: type = MongoDBEnhancedEncoder
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
