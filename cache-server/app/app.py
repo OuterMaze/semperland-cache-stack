@@ -1,3 +1,4 @@
+import functools
 import os
 from datetime import datetime, date
 from json import JSONEncoder
@@ -161,6 +162,7 @@ class CacheApp(Flask):
         :param f: The function to wrap.
         """
 
+        @functools.wraps(f)
         def wrapped(*args, **kwargs):
             if self._use_transactions:
                 with self._mongo_client.start_session() as session:
@@ -171,7 +173,7 @@ class CacheApp(Flask):
                         session.commit_transaction()
                         return result
             else:
-                return f(*args, session_data={}, **kwargs)
+                return f(*args, session_kwargs={}, **kwargs)
 
         return wrapped
 
@@ -184,14 +186,14 @@ current_app: CacheApp
 @app.mongo_session
 def get_brands(session_kwargs: dict):
     text = request.args.get("text")
-    criteria = {"token_group": "nft", "token_type": "brand"}
+    criteria = {"token_group": "nft", "metadata.properties.type": "brand"}
     if text:
         criteria |= {"$text": {"search": text}}
     brands = current_app.sort_and_page(
         current_app.tokens_metadata.find(criteria, **session_kwargs),
         sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
     )
-    return jsonify({"brands": brands})
+    return jsonify({"brands": list(brands)})
 
 
 @app.route("/brands/<string:brand>/tokens", methods=["GET"])
@@ -205,7 +207,7 @@ def get_brand_tokens(brand: str, session_kwargs: dict):
         current_app.tokens_metadata.find(criteria, **session_kwargs),
         sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
     )
-    return jsonify({"tokens": tokens})
+    return jsonify({"tokens": list(tokens)})
 
 
 @app.route("/balances/<string:owner>", methods=["GET"])
@@ -219,7 +221,7 @@ def get_balances(owner: str, session_kwargs: dict):
         current_app.balances.find(criteria, **session_kwargs),
         sort=[("token", ASCENDING)], skip=current_app.get_skip()
     )
-    return jsonify({"balances": balances})
+    return jsonify({"balances": list(balances)})
 
 
 @app.route("/deals/<string:dealer>", methods=["GET"])
@@ -230,7 +232,7 @@ def get_deals(dealer: str, session_kwargs: dict):
         current_app.deals.find(criteria, **session_kwargs),
         sort=[("index", DESCENDING)], skip=current_app.get_skip()
     )
-    return jsonify({"deals", deals})
+    return jsonify({"deals", list(deals)})
 
 
 @app.route("/permissions/<string:user>", methods=["GET"])
@@ -242,7 +244,7 @@ def get_permissions(user: str, session_kwargs: dict):
         current_app.metaverse_permissions.find(criteria, **session_kwargs),
         sort=[], skip=current_app.get_skip()
     )
-    return jsonify({"permissions": permissions})
+    return jsonify({"permissions": list(permissions)})
 
 
 @app.route("/brands/<string:brand>/permissions/<string:user>", methods=["GET"])
@@ -254,7 +256,7 @@ def get_brand_permissions(brand: str, user: str, session_kwargs: dict):
         current_app.brand_permissions.find(criteria, **session_kwargs),
         sort=[], skip=current_app.get_skip()
     )
-    return jsonify({"permissions": permissions})
+    return jsonify({"permissions": list(permissions)})
 
 
 @app.route("/brands/<string:brand>/sponsors", methods=["GET"])
@@ -265,7 +267,7 @@ def get_brand_sponsors(brand: str, session_kwargs: dict):
         current_app.sponsors.find(criteria, **session_kwargs),
         sort=[], skip=current_app.get_skip()
     )
-    return jsonify({"sponsors": sponsors})
+    return jsonify({"sponsors": list(sponsors)})
 
 
 @app.route("/parameters", methods=["GET"])
@@ -275,7 +277,7 @@ def get_parameters(session_kwargs: dict):
         current_app.metaverse_parameters.find({}, **session_kwargs),
         sort=[], skip=current_app.get_skip()
     )
-    return jsonify({"parameters": parameters})
+    return jsonify({"parameters": list(parameters)})
 
 
 @app.route("/sponsors/<string:sponsor>", methods=["GET"])
