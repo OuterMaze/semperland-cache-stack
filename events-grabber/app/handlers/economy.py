@@ -57,11 +57,11 @@ class EconomyContractEventHandler(MongoDBContractEventHandler):
         to = self._get_arg(args, 'to')
 
         if event_name == 'TransferSingle':
-            id_ = hex(self._get_arg(args, 'id') or 0)
+            id_ = "0x%064x" % (self._get_arg(args, 'id') or 0)
             value = self._get_arg(args, 'value') or 0
             self._handle_transfer_single(from_, to, id_, value)
         elif event_name == 'TransferBatch':
-            ids_ = [hex(k) for k in self._get_arg(args, 'ids') or []]
+            ids_ = ["0x%064x" % k for k in self._get_arg(args, 'ids') or []]
             values = self._get_arg(args, 'values') or []
             self._handle_transfer_batch(from_, to, ids_, values)
         elif event_name == 'DealStarted':

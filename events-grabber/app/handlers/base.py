@@ -257,7 +257,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
 
         data = self._get_metadata(token_id)
         document = {
-            "token": str(token_id),
+            "token": "0x%064x" % token_id,
             "metadata": data,
             "token_type": token_type,
             "token_group": "nft"
@@ -273,7 +273,7 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             document["brand"] = "0x%040x" % brand_num
             document["token_group"] = "ft"
         self._tokens_metadata.replace_one({
-            "token": str(token_id)
+            "token": "0x%064x" % token_id
         }, document, upsert=True, **self.client_session_kwargs)
 
     def _set_parameter(self, key, value):
