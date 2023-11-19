@@ -1,11 +1,11 @@
 import functools
 import os
 from datetime import datetime, date
-from json import JSONEncoder
 from typing import Optional, Union, Any
 from urllib.parse import quote_plus
 from bson import ObjectId
 from flask import Flask, current_app, request, jsonify
+from flask.json.provider import DefaultJSONProvider
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from pymongo.cursor import Cursor
 
@@ -19,7 +19,7 @@ DATETIME_FORMATS = [
 DATE_FORMAT = "%Y-%m-%d"
 
 
-class MongoDBEnhancedEncoder(JSONEncoder):
+class MongoDBEnhancedProvider(DefaultJSONProvider):
     """
     This is an enhancement over a Flask's JSONEncoder but with
     adding the encoding of an ObjectId to string, and custom
@@ -60,7 +60,7 @@ class CacheApp(Flask):
     The cache app we use.
     """
 
-    json_encoder: type = MongoDBEnhancedEncoder
+    json_provider_class: type = MongoDBEnhancedProvider
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
