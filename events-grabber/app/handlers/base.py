@@ -256,6 +256,9 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
         """
 
         data = self._get_metadata(token_id)
+        data["name"] = (data.get("name") or "").strip()
+        data["description"] = (data.get("description") or "").strip()
+        data["image"] = (data.get("image") or "").strip()
         document = {
             "token": "0x%064x" % token_id,
             "metadata": data,
