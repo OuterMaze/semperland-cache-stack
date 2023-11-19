@@ -98,8 +98,16 @@ class CacheApp(Flask):
         return self._db
 
     @property
+    def page_size(self):
+        return self._page_size
+
+    @property
     def tokens_metadata(self):
         return self._db["tokens_metadata"]
+
+    @property
+    def balances(self):
+        return self._db["balances"]
 
     def sort_and_page(self, cursor: Cursor, sort: Optional[Union[dict, list]], skip: Optional[int]):
         """
@@ -154,7 +162,7 @@ current_app: CacheApp
 
 @app.route("/brands", methods=["GET"])
 @app.mongo_session
-def get_brands(session_kwargs):
+def get_brands(session_kwargs: dict):
     text = request.args.get("text")
     criteria = {"token_group": "nft", "token_type": "brand"}
     if text:
@@ -168,7 +176,7 @@ def get_brands(session_kwargs):
 
 @app.route("/brands/<string:brand>/tokens", methods=["GET"])
 @app.mongo_session
-def get_brand_tokens(brand, session_kwargs):
+def get_brand_tokens(brand: str, session_kwargs: dict):
     text = request.args.get("text")
     criteria = {"token_group": "ft", "brand": brand}
     if text:
@@ -178,3 +186,17 @@ def get_brand_tokens(brand, session_kwargs):
         sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
     )
     return jsonify({"tokens": tokens})
+
+
+@app.route("/balances/<string:owner>", methods=["GET"])
+@app.mongo_session
+def get_balances(owner: str, session_kwargs: dict):
+    criteria = {"owner": owner}
+    tokens = request.args.get("tokens", "").split(",")[:current_app.page_size]
+    if tokens:
+        criteria |= {"token": {"$in": tokens}}
+    balances = current_app.sort_and_page(
+        current_app.balances.find(criteria, **session_kwargs),
+        sort=[("token", ASCENDING)], skip=current_app.get_skip()
+    )
+    return jsonify({"balances": balances})
