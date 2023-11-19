@@ -168,7 +168,7 @@ def get_brands(session_kwargs):
 
 @app.route("/brands/<string:brand>/tokens", methods=["GET"])
 @app.mongo_session
-def get_brands(brand, session_kwargs):
+def get_brand_tokens(brand, session_kwargs):
     text = request.args.get("text")
     criteria = {"token_group": "ft", "brand": brand}
     if text:
