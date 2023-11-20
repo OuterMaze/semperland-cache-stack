@@ -202,7 +202,7 @@ def get_balances(owner: str, session_kwargs: dict):
     criteria = {"owner": owner}
     tokens = request.args.get("tokens", "")
     if tokens:
-        tokens = tokens.split(",")[:current_app.page_size]
+        tokens = tokens.split(",")
         criteria |= {"token": {"$in": tokens}}
     balances = current_app.sort_and_page(
         current_app.balances.find(criteria, **session_kwargs),
@@ -267,7 +267,7 @@ def get_parameters(session_kwargs: dict):
     return jsonify({"parameters": list(parameters)})
 
 
-@app.route("/sponsors/<string:sponsor>", methods=["GET"])
+@app.route("/sponsors/<string:sponsor>/brands", methods=["GET"])
 @app.mongo_session
 def get_sponsors(sponsor: str, session_kwargs: dict):
     criteria = {"sponsor": sponsor, "sponsored": True}
@@ -281,13 +281,17 @@ def get_sponsors(sponsor: str, session_kwargs: dict):
 @app.route("/tokens", methods=["GET"], defaults={"brand": "all"})
 @app.route("/tokens/<string:brand>", methods=["GET"])
 @app.mongo_session
-def get_brand_tokens(brand: str, session_kwargs: dict):
+def get_tokens(brand: str, session_kwargs: dict):
     text = request.args.get("text")
+    tokens = request.args.get("tokens", "")
     criteria = {"token_group": "ft"}
     if brand != "all":
         criteria |= {"brand": brand}
     if text:
         criteria |= {"$text": {"$search": text}}
+    if tokens:
+        tokens = tokens.split(",")
+        criteria |= {"token": {"$in": tokens}}
     tokens = current_app.sort_and_page(
         current_app.tokens_metadata.find(criteria, **session_kwargs),
         sort=[("metadata.name", ASCENDING)], skip=current_app.get_skip()
