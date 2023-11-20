@@ -1,5 +1,4 @@
 import binascii
-import logging
 from pymongo import MongoClient
 from web3.contract import Contract
 from .base import MetaverseRelatedContractEventHandler
@@ -15,10 +14,6 @@ database:
    - non-uniquely by `user` (ordering does not matter).
    - uniquely by the pair (`brand_id`, `permission`, `user`).
 """
-
-
-LOGGER = logging.getLogger("BRAND_REGISTRY")
-LOGGER.setLevel(logging.INFO)
 
 
 class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
@@ -57,7 +52,6 @@ class BrandRegistryContractEventHandler(MetaverseRelatedContractEventHandler):
         elif event_name == "BrandRegistered":
             self._download_metadata(int(self._get_arg(args, "brandId"), 16))
         elif event_name == "BrandUpdated" or event_name == "BrandSocialCommitmentUpdated":
-            LOGGER.info(f"BrandRegistry event: {event_name}, args: {args}")
             self._download_metadata(int(self._get_arg(args, "brandId"), 16))
         elif event_name == "BrandPermissionChanged":
             brand_id = self._get_arg(args, "brandId")

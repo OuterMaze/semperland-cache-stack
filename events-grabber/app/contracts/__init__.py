@@ -56,7 +56,7 @@ def get_contracts(web3: Web3, metaverse_contract_address: str):
     )
 
     # Currency minting plug-in:
-    currency_minting_plugin_contract_address = metaverse_contract.functions.pluginsList(0).call()
+    currency_minting_plugin_contract_address = metaverse_contract.functions.pluginsList(1).call()
     currency_minting_plugin_contract = web3.eth.contract(
         address=currency_minting_plugin_contract_address,
         abi=CURRENCY_MINTING_PLUGIN_CONTRACT_ABI
