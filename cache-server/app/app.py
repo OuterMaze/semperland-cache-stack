@@ -269,13 +269,13 @@ def get_parameters(session_kwargs: dict):
 
 @app.route("/sponsors/<string:sponsor>/brands", methods=["GET"])
 @app.mongo_session
-def get_sponsors(sponsor: str, session_kwargs: dict):
+def get_sponsored_brands(sponsor: str, session_kwargs: dict):
     criteria = {"sponsor": sponsor, "sponsored": True}
     sponsors = current_app.sort_and_page(
         current_app.sponsors.find(criteria, **session_kwargs),
         sort=[], skip=current_app.get_skip()
     )
-    return jsonify({"sponsors": list(sponsors)})
+    return jsonify({"brands": list(sponsors)})
 
 
 @app.route("/tokens", methods=["GET"], defaults={"brand": "all"})
