@@ -272,11 +272,11 @@ class MetaverseRelatedContractEventHandler(MongoDBContractEventHandler):
             #
             # Also, the token is marked as FT instead of NFT.
             brand_num = (token_num >> 64) & ((1 << 160) - 1)
-            document["brand"] = "0x%040x" % brand_num
+            document["brand"] = self.contract.w3.to_checksum_address("0x%040x" % brand_num)
             document["token_group"] = "ft"
         elif data.get("properties", {}).get("type") == "brand":
             # We extract the brand itself.
-            document["brand"] = "0x%040x" % token_num
+            document["brand"] = self.contract.w3.to_checksum_address("0x%040x" % token_num)
         self._tokens_metadata.replace_one({
             "token": "0x%064x" % token_id
         }, document, upsert=True, **self.client_session_kwargs)
